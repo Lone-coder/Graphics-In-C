@@ -2,7 +2,7 @@
 
 void main()
 {
-	CreateConsole("GUI in console",300,200,1,1);
+	CreateConsole("GUI in console",120,40,7,14);
 	SetBGcolor(BG_DARK_GREY);
 
 	
@@ -45,7 +45,7 @@ void main()
 		
 		//printStr("HELLO");
 		
-		DrawFrame();			
+		DrawFrame(TRUE);			
 	}
 
 }

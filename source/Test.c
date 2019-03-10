@@ -21,6 +21,6 @@ void main()
 		
 		FillCircle(150,100,1,FG_BLUE);
 		
-		DrawFrame();
+		DrawFrame(TRUE);
 	}
 }
