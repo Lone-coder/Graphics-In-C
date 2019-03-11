@@ -99,7 +99,7 @@ void CreateConsole(char appName[],int screenW,int screenH,int fontW,int fontH)
     cfi.nFont = 0;
     cfi.dwFontSize.X = fontW;
     cfi.dwFontSize.Y = fontH;
-    cfi.FontFamily = FF_MODERN;
+    cfi.FontFamily = FF_DONTCARE;
     cfi.FontWeight = FW_NORMAL;
 
     SetConsoleTitle(appName);
@@ -363,8 +363,9 @@ void FillCircle(int xc, int yc, int r,int col)
 			else p += 4 * (x++ - y--) + 10;
 		}
 	};
-// fills a rectangle 
-void fill(int x1,int y1,int x2,int y2,int color)
+	
+// Fills a rectangle 
+void Fillrect(int x1,int y1,int x2,int y2,int color)
 {
 	for(i=x1;i<x2;i++)
 	{
@@ -374,5 +375,15 @@ void fill(int x1,int y1,int x2,int y2,int color)
 		}
 	}
 }
+
+void UpdateRot(double ang,int *x,int *y)
+{
+    double angle=(ang*M_PI)/180;
+    
+	*x=*x*cos(angle)-*y*sin(angle);
+	*y=*x*sin(angle)+*y*cos(angle);
+	
+}
+
 
 #endif

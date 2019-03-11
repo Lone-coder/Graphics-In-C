@@ -11,7 +11,7 @@ void main()
 	CreateConsole("Text",120,40,7,14);
 	SetBGcolor(BG_BLACK);
 	
-	file=fopen("CGtext.cif","r");
+	file=fopen("\CharInfo\CGtext.cif","r");
 
 	if(file==NULL)
 		return;
@@ -50,7 +50,7 @@ void main()
 			}
 		}
 		
-		DrawFrame();		
+		DrawFrame(TRUE);		
 	}
 
 }

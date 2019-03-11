@@ -7,6 +7,14 @@ int stringsize(char*);
 char CharInfo[1000];
 char cho[35];
 
+typedef struct panel
+{
+	int ox,oy;
+	int width,height;
+	int color;
+	
+}Panel;
+
 typedef struct button
 {
 	int ox,oy;
@@ -17,13 +25,16 @@ typedef struct button
 	
 }Button;
 
-typedef struct panel
+typedef struct loadingbar
 {
 	int ox,oy;
 	int width,height;
-	int color;
+	int bordercolor;
+	int fillcolor;
+	int loadvalue;
+	int endvalue;	
 	
-}Panel;
+}LoadingBar;
 
 void MakeButton(Button B,int border,int bdcol)
 {
@@ -34,7 +45,7 @@ void MakeButton(Button B,int border,int bdcol)
 	y1=B.oy-(B.height/2);
 	y2=B.oy+(B.height/2);
 	
-	fill(x1,y1,x2,y2,B.color);
+	Fillrect(x1,y1,x2,y2,B.color);
 	
 	if(border)
 	{
@@ -67,7 +78,23 @@ void MakePanel(Panel P)
 	y1=P.oy-(P.height/2);
 	y2=P.oy+(P.height/2);
 	
-	fill(x1,y1,x2,y2,P.color);
+	Fillrect(x1,y1,x2,y2,P.color);
+}
+
+void MakeLoadingBar(LoadingBar *Lb)
+{
+	int x1,x2,y1,y2;
+	
+	x1=Lb->ox-(Lb->width/2);
+	x2=Lb->ox+(Lb->width/2);
+	y1=Lb->oy-(Lb->height/2);
+	y2=Lb->oy+(Lb->height/2);
+	
+	Lb->endvalue=x2-2;
+	
+	DrawRect(x1,y1,x2,y2,Lb->bordercolor);
+	Fillrect(x1+2,y1+2,Lb->loadvalue,y2-2,Lb->fillcolor);
+	
 }
 
 void readChar(char alpha)

@@ -5,7 +5,7 @@ void main()
 {
 	OnStart()
 	{
-		CreateConsole("Logic Gate Simulator",800,600,1,1);
+		CreateConsole("Logic Gate Simulator",200,150,1,1);
 		SetBGcolor(BG_BLACK);
 		
 	}

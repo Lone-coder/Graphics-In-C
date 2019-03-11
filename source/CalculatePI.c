@@ -1,3 +1,5 @@
+//Monte Carlo method to calculate approx value of PI
+
 #include "2DGC.h"
 
 void main()
