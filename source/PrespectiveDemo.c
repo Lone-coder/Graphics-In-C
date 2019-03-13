@@ -2,7 +2,7 @@
 
 void main()
 {
-	CreateConsole("Perspective Demo",600,200,1,1);
+	CreateConsole("Perspective Demo",200,200,2,2);
 
     OnStart()
     {

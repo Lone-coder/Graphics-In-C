@@ -2,7 +2,7 @@
 
 void main()
 {
-	CreateConsole("Orthographic Demo",600,200,1,1);
+	CreateConsole("Orthographic Demo",200,200,2,2);
 
     OnStart()
     {

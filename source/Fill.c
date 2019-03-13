@@ -2,7 +2,7 @@
 
 int main()
 {
-    CreateConsole("Filled polygon",600,200,1,1);
+    CreateConsole("Filled polygon",200,200,2,2);
 
     OnStart()
     {

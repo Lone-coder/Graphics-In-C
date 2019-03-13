@@ -3,7 +3,7 @@
 void main()
 {
 
-	CreateConsole("Analog Clock",100,80,4,3);
+	CreateConsole("Analog Clock",200,200,2,2);
 	SetBGcolor(BG_WHITE);
 	int x=100/2,y=10;
 	int ang=6;

@@ -2,6 +2,7 @@
 #define _CONSOLEGUI_H_
 
 #include "2DGC.h"
+#include "PixelText.h"
 
 int stringsize(char*);
 char CharInfo[1000];
@@ -58,15 +59,6 @@ void MakeButton(Button B,int border,int bdcol)
 			}
 		}
 	}
-	
-	if(*(B.label)!=0)
-	{
-		int textXO;
-		int textYO;
-		textXO=(( B.width - stringsize(B.label)) / 2)+ x1;
-		textYO=(( B.height - 1) / 2)+ y1;
-		printString(B.label,textXO,textYO,B.textColor,FGtoBG(B.color));	
-	}
 }
 
 void MakePanel(Panel P)
@@ -97,83 +89,16 @@ void MakeLoadingBar(LoadingBar *Lb)
 	
 }
 
-void readChar(char alpha)
+void printString(const char *s,int x,int y,int color)
 {
-	int n=0;
-	char c=0;
+	int l=0;
+	int space=0;
 	
-	FILE *cifile;
-	cifile=fopen("CGtext.cif","r");
-	
-	while(CharInfo[n]!=EOF)
+	while(*(s+l)!=0)
 	{
-		CharInfo[n]=fgetc(cifile);
-		n++;	
-	}
-	
-	n=0;
-	
-	fclose(cifile);
-	
-	while(n<1000)
-	{
-		c=CharInfo[n];
-		
-		if(c==alpha)
-		{
-			n+=2;
-			i=0;
-			
-			while(i<35)
-			{
-				cho[i]=CharInfo[n];
-				//printf("%c",cho[i]);						
-				i++;
-				n++;
-			}
-			//printf("\n");
-			return;
-		}
-		
-		n++;
-	}
-	
-}
-
-int stringsize(char *p)
-{
-	int n=0;
-	
-	while(*(p+n)!=0)
-	{
-		n++;
-	}
-	return n;
-}
-
-void printStr(const char *s)
-{
-	int n=0,x=0;
-	int charSpace=2;
-	
-	if(s[n]!=0)
-	{
-		readChar(s[n]);
-		
-		for(i=0;i<7;i++)
-		{
-			for(j=0;j<5;j++)
-			{
-				if(cho[j+i*5]=='.')
-					putpixel(j,i,FG_BLACK);
-					
-				if(cho[j+i*5]=='o')
-					putpixel(j,i,FG_GREEN);
-			}
-		}
-		
-		//x+=charSpace;
-		n++;
+		putchara(*(s+l),x+space,y,color);
+		space+=6;
+		l++;
 	}
 }
 

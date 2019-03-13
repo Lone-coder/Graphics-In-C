@@ -15,7 +15,7 @@ void main()
 	
 	OnStart()
 	{
-		CreateConsole("Calculating PI using Monte Carlo method",200,200,4,4);
+		CreateConsole("Calculating PI using Monte Carlo method",200,200,2,2);
 		DrawRect(10,10,190,190,FG_GREEN);
 		DrawCircle(100,100,r,FG_RED);
 	}

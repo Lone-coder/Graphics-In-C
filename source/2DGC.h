@@ -203,24 +203,6 @@ void putpixel(int x,int y,int color)
         consoleBuffer[x +screenWidth* y].Attributes =color | bgcolor;
 }
 
-void putChar(int x,int y,char c,int fcolor,int bgcolor)
-{
-	consoleBuffer[x +screenWidth* y].Char.AsciiChar = c;
-    consoleBuffer[x +screenWidth* y].Attributes =fcolor | bgcolor;
-}
-
-void printString(char *s,int x,int y,int fcolor,int bgcolor)
-{
-	int i=0;
-	
-	while(*(s+i)!=0)
-	{
-		putChar(x,y,*(s+i),fcolor,bgcolor);
-		x++;
-		i++;
-	}
-}
-
 void DrawLine(int x1, int y1, int x2, int y2,int col)
 {
     int x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
