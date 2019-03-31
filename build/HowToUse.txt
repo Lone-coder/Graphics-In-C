@@ -1,0 +1,17 @@
+#If these builds are not working properly follow the steps given below:
+
+1)Open the required .exe file and go to Properties option of console by clicking on the icon on tope-left corner of the window
+
+2)Then go to Layout tab and disable "wrap text output on resize" under Screen Buffer Size
+
+3) Also try disabling "Let system position window" option under Window Position
+
+4)Press OK and close Property window and also the porgram window
+
+5)Now reopen the .exe file,it should work as needed.
+
+#Addidtional info on mouse input
+
+If mouse input is not working ,disable QuickEdit Mode under EditOptions under Options tab in Properties window 
+
+Enjoy using my products --Lone-coder
