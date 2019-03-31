@@ -9,7 +9,7 @@ void main()
 
 	
 	CreateConsole("Text",120,40,7,14);
-	SetBGcolor(BG_BLACK);
+	SetBGcolor(BLACK);
 	
 	file=fopen("\CharInfo\CGtext.cif","r");
 
@@ -43,10 +43,10 @@ void main()
 			for(j=0;j<5;j++)
 			{
 				if(cho[j+i*5]=='.')
-					putpixel(j,i,FG_BLACK);
+					putpixel(j,i,BLACK);
 					
 				if(cho[j+i*5]=='o')
-					putpixel(j,i,FG_BLUE);
+					putpixel(j,i,BLUE);
 			}
 		}
 		

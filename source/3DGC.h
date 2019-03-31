@@ -245,8 +245,8 @@ void ProjectPoint(vector3 pin,vector3 *pout)
     if(Projection==Presp)
     {
         Mat3x3 PrespProj={
-            z*40,0,0,
-            0,z*40,0,
+            z*50,0,0,
+            0,z*50,0,
             0,0,0
         };
 

@@ -4,9 +4,17 @@
 #include "2DGC.h"
 #include "PixelText.h"
 
-int stringsize(char*);
-char CharInfo[1000];
-char cho[35];
+VOID ErrorExit(LPSTR);
+VOID KeyEventProc(KEY_EVENT_RECORD); 
+VOID MouseEventProc(MOUSE_EVENT_RECORD); 
+VOID ResizeEventProc(WINDOW_BUFFER_SIZE_RECORD);
+
+DWORD cNumRead, fdwMode, n; 
+INPUT_RECORD irInBuf[128]; 
+int offsetx, offsety;
+
+
+char *toString(int num);
 
 typedef struct panel
 {
@@ -16,14 +24,15 @@ typedef struct panel
 	
 }Panel;
 
+typedef void (*OnClickFunction)(void);
 typedef struct button
 {
 	int ox,oy;
 	int width,height;
 	int color;
 	int textColor;
-	char *label;
-	
+	const char *label;
+	OnClickFunction Onclick;
 }Button;
 
 typedef struct loadingbar
@@ -33,9 +42,15 @@ typedef struct loadingbar
 	int bordercolor;
 	int fillcolor;
 	int loadvalue;
-	int endvalue;	
-	
+	int endvalue;
+		
 }LoadingBar;
+
+void MakeButton(Button,int,int);
+void MakePanel(Panel);
+void MakeLoadingBar(LoadingBar *);
+void printString(const char *,int,int,int);
+void GetInput();
 
 void MakeButton(Button B,int border,int bdcol)
 {
@@ -50,14 +65,19 @@ void MakeButton(Button B,int border,int bdcol)
 	
 	if(border)
 	{
-		for(i=x1;i<x2;i++)
+		for(i=x1;i<=x2;i++)
 		{
 			for(j=y1;j<=y2;j++)
 			{
-				if(i==x1 || i==x2-1 || j==y1 || j==y2)
+				if(i==x1 || i==x2 || j==y1 || j==y2)
 					putpixel(i,j,bdcol);
 			}
 		}
+	}
+	
+	if(B.label!=NULL)
+	{
+		printString(B.label,x1+10,B.oy,B.textColor);
 	}
 }
 
@@ -84,27 +104,174 @@ void MakeLoadingBar(LoadingBar *Lb)
 	
 	Lb->endvalue=x2-2;
 	
-	DrawRect(x1,y1,x2,y2,Lb->bordercolor);
+	DrawRect(Lb->ox,Lb->oy,Lb->width,Lb->height,Lb->bordercolor);
 	Fillrect(x1+2,y1+2,Lb->loadvalue,y2-2,Lb->fillcolor);
 	
 }
 
 void printString(const char *s,int x,int y,int color)
 {
-	int l=0;
+	int i=0;
 	int space=0;
 	
-	while(*(s+l)!=0)
+	while(*(s+i)!=0)
 	{
-		putchara(*(s+l),x+space,y,color);
+		putchara(*(s+i),x+space,y,color);
 		space+=6;
-		l++;
+		i++;
 	}
 }
 
-void OnClick(Button B)
+int stringsize(char *s)
 {
-	//Do on click event
+	int n=0;
+	while(*(s+n)!=0)
+		n++;
+	return n;
 }
+
+char *toString(int num)
+{
+	int n=num;
+	int numdigits;
+	char *number;
+		
+	while(n!=0)
+	{
+		n=n/10;
+		numdigits++;
+	}
+	
+	number=(char*)malloc(sizeof(char)*numdigits);
+	
+	itoa(num,number,10);
+	
+	return number;	
+}
+
+//---------------Input handling--------------------//
+
+
+Button *Buttons;
+int buttonNum;
+
+void NumOfButtons(int num)
+{
+	buttonNum=num;
+	Buttons=(Button*)malloc(num*sizeof(Button));
+}
+
+void GetInput()
+{
+        ReadConsoleInput(rHnd,      // input buffer handle 
+                		irInBuf,     // buffer to read into 
+                		128,         // size of read buffer 
+                		&cNumRead); // number of records read  
+ 
+        // Dispatch the events to the appropriate handler. 
+        for (n = 0; n< cNumRead; n++) 
+        {
+            switch(irInBuf[n].EventType) 
+            { 
+                case KEY_EVENT: // keyboard input 
+                    KeyEventProc(irInBuf[n].Event.KeyEvent);
+                    break; 
+ 
+                case MOUSE_EVENT: // mouse input 
+                
+                        offsetx = irInBuf[n].Event.MouseEvent.dwMousePosition.X;
+        				offsety = irInBuf[n].Event.MouseEvent.dwMousePosition.Y;
+        				//DrawRect(offsetx,offsety,10,10,BLACK);
+        				for(i=0;i<buttonNum;i++)
+        				{
+        					if( offsetx>Buttons[i].ox-(Buttons[i].width/2) && offsetx<Buttons[i].ox+(Buttons[i].width/2) 
+							&& offsety>Buttons[i].oy-(Buttons[i].height/2) &&offsety<Buttons[i].oy+(Buttons[i].height/2))
+							{
+                				DrawRect(Buttons[i].ox,Buttons[i].oy,Buttons[i].width+6,Buttons[i].height+5,randcolor());							
+							}
+	
+						}
+                    MouseEventProc(irInBuf[n].Event.MouseEvent);
+                    break; 
+ 
+                case WINDOW_BUFFER_SIZE_EVENT: // scrn buf. resizing 
+                    //ResizeEventProc( irInBuf[i].Event.WindowBufferSizeEvent ); 
+                    break; 
+ 
+                case FOCUS_EVENT:  // disregard focus events 
+ 
+                case MENU_EVENT:   // disregard menu events 
+                    break; 
+ 
+                default: 
+                    //ErrorExit("Unknown event type"); 
+                    break; 
+            } 
+        }
+}
+
+VOID KeyEventProc(KEY_EVENT_RECORD ker)
+{
+//    printf("Key event: ");
+//
+//        printf("key pressed\n");
+//    else printf("key released\n");
+}
+
+VOID MouseEventProc(MOUSE_EVENT_RECORD mer)
+{
+#ifndef MOUSE_HWHEELED
+#define MOUSE_HWHEELED 0x0008
+#endif
+    
+    switch(mer.dwEventFlags)
+    {
+        case 0:
+
+            if(mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+            {           	
+				for(i=0;i<buttonNum;i++)
+				{
+					if( offsetx>Buttons[i].ox-(Buttons[i].width/2) && offsetx<Buttons[i].ox+(Buttons[i].width/2) 
+					&& offsety>Buttons[i].oy-(Buttons[i].height/2) &&offsety<Buttons[i].oy+(Buttons[i].height/2))
+					{
+						Buttons[i].Onclick();					
+					}
+
+				}
+            }
+            else if(mer.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
+            {
+                //printf("right button press \n");
+            }
+            else
+            {
+                //printf("button press\n");
+            }
+            break;
+            
+        case DOUBLE_CLICK:
+            //printf("double click\n");
+            break;
+        case MOUSE_HWHEELED:
+            //printf("horizontal mouse wheel\n");
+            break;
+        case MOUSE_MOVED:
+            //printf("mouse moved\n");
+            break;
+        case MOUSE_WHEELED:
+            //printf("vertical mouse wheel\n");
+            break;
+        default:
+            //printf("unknown\n");
+            break;
+    }
+}
+
+VOID ResizeEventProc(WINDOW_BUFFER_SIZE_RECORD wbsr)
+{
+    //printf("Resize event\n");
+    //printf("Console screen buffer is %d columns by %d rows.\n", wbsr.dwSize.X, wbsr.dwSize.Y);
+} 
 
 #endif

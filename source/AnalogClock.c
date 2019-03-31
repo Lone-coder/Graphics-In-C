@@ -4,19 +4,19 @@ void main()
 {
 
 	CreateConsole("Analog Clock",200,200,2,2);
-	SetBGcolor(BG_WHITE);
-	int x=100/2,y=10;
-	int ang=6;
+	SetBGcolor(WHITE);
+	int x=100,y=5;
+	int ang=1;
 		
 	OnUpdate()
 	{
-		DrawLine(100/2,80/2,x,y,FG_GREEN);
-		DrawCircle(100/2,80/2,35,FG_BLUE);
-		x=x-50;y=y-40;
-		UpdateRot(ang,&x,&y);
-		x=x+50;y=y+40;
+		DrawLine(0,0,x,y,GREEN);
+		//DrawCircle(100/2,100/2,40,BLUE);
+		
+		//UpdateRot(ang,&x,&y);
+
 		DrawFrame(TRUE);
-		ang++;
+		//ang++;
 		sleep(1);
 	}
 }

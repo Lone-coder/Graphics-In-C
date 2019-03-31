@@ -1,5 +1,6 @@
-#ifndef _PIXELTEXT_H
-#define _PIXELTEXT_H
+#ifndef PIXELTEXT_H
+#define PIXELTEXT_H
+
 #include "2DGC.h"
 
 void putchara(char c,int x,int y,int textcolor)
@@ -1358,6 +1359,519 @@ void putchara(char c,int x,int y,int textcolor)
 			putpixel(x+2,y+3,textcolor);
 			
 			break;
+			
+		case '1':
+			//-3
+			//putpixel(x-2,y-3,textcolor);
+			//putpixel(x-1,y-3,textcolor);
+			putpixel(x-0,y-3,textcolor);
+			//putpixel(x+1,y-3,textcolor);
+			//putpixel(x+2,y-3,textcolor);
+			
+			//-2
+			//putpixel(x-2,y-2,textcolor);
+			putpixel(x-1,y-2,textcolor);
+			putpixel(x-0,y-2,textcolor);
+			//putpixel(x+1,y-2,textcolor);
+			//putpixel(x+2,y-2,textcolor);
+ 			
+ 			//-1
+ 			//putpixel(x-2,y-1,textcolor);
+			//putpixel(x-1,y-1,textcolor);
+			putpixel(x-0,y-1,textcolor);
+			//putpixel(x+1,y-1,textcolor);
+			//putpixel(x+2,y-1,textcolor);
+			
+			//0
+			//putpixel(x-2,y-0,textcolor);
+			//putpixel(x-1,y-0,textcolor);
+			putpixel(x-0,y-0,textcolor);
+			//putpixel(x+1,y-0,textcolor);
+			//putpixel(x+2,y-0,textcolor);
+			
+			//+1
+			//putpixel(x-2,y+1,textcolor);
+			//putpixel(x-1,y+1,textcolor);
+			putpixel(x-0,y+1,textcolor);
+			//putpixel(x+1,y+1,textcolor);
+			//putpixel(x+2,y+1,textcolor);
+			
+			//+2
+			//putpixel(x-2,y+2,textcolor);
+			//putpixel(x-1,y+2,textcolor);
+			putpixel(x-0,y+2,textcolor);
+			//putpixel(x+1,y+2,textcolor);
+			//putpixel(x+2,y+2,textcolor);
+			
+			//+3
+    		//putpixel(x-2,y+3,textcolor);
+			putpixel(x-1,y+3,textcolor);
+			putpixel(x-0,y+3,textcolor);
+			putpixel(x+1,y+3,textcolor);
+			//putpixel(x+2,y+3,textcolor);
+		break;
+		case '2':
+			//-3
+			//putpixel(x-2,y-3,textcolor);
+			putpixel(x-1,y-3,textcolor);
+			putpixel(x-0,y-3,textcolor);
+			putpixel(x+1,y-3,textcolor);
+			//putpixel(x+2,y-3,textcolor);
+			
+			//-2
+			putpixel(x-2,y-2,textcolor);
+			//putpixel(x-1,y-2,textcolor);
+			//putpixel(x-0,y-2,textcolor);
+			//putpixel(x+1,y-2,textcolor);
+			putpixel(x+2,y-2,textcolor);
+ 			
+ 			//-1
+ 			//putpixel(x-2,y-1,textcolor);
+			//putpixel(x-1,y-1,textcolor);
+			//putpixel(x-0,y-1,textcolor);
+			//putpixel(x+1,y-1,textcolor);
+			putpixel(x+2,y-1,textcolor);
+			
+			//0
+			//putpixel(x-2,y-0,textcolor);
+			//putpixel(x-1,y-0,textcolor);
+			//putpixel(x-0,y-0,textcolor);
+			putpixel(x+1,y-0,textcolor);
+			//putpixel(x+2,y-0,textcolor);
+			
+			//+1
+			//putpixel(x-2,y+1,textcolor);
+			//putpixel(x-1,y+1,textcolor);
+			putpixel(x-0,y+1,textcolor);
+			//putpixel(x+1,y+1,textcolor);
+			//putpixel(x+2,y+1,textcolor);
+			
+			//+2
+			//putpixel(x-2,y+2,textcolor);
+			putpixel(x-1,y+2,textcolor);
+			//putpixel(x-0,y+2,textcolor);
+			//putpixel(x+1,y+2,textcolor);
+			//putpixel(x+2,y+2,textcolor);
+			
+			//+3
+    		putpixel(x-2,y+3,textcolor);
+			putpixel(x-1,y+3,textcolor);
+			putpixel(x-0,y+3,textcolor);
+			putpixel(x+1,y+3,textcolor);
+			putpixel(x+2,y+3,textcolor);
+			break;
+		case '3':
+			//-3
+			putpixel(x-2,y-3,textcolor);
+			putpixel(x-1,y-3,textcolor);
+			putpixel(x-0,y-3,textcolor);
+			putpixel(x+1,y-3,textcolor);
+			putpixel(x+2,y-3,textcolor);
+			
+			//-2
+			//putpixel(x-2,y-2,textcolor);
+			//putpixel(x-1,y-2,textcolor);
+			//putpixel(x-0,y-2,textcolor);
+			putpixel(x+1,y-2,textcolor);
+			//putpixel(x+2,y-2,textcolor);
+ 			
+ 			//-1
+ 			//putpixel(x-2,y-1,textcolor);
+			//putpixel(x-1,y-1,textcolor);
+			putpixel(x-0,y-1,textcolor);
+			//putpixel(x+1,y-1,textcolor);
+			//putpixel(x+2,y-1,textcolor);
+			
+			//0
+			//putpixel(x-2,y-0,textcolor);
+			//putpixel(x-1,y-0,textcolor);
+			//putpixel(x-0,y-0,textcolor);
+			putpixel(x+1,y-0,textcolor);
+			//putpixel(x+2,y-0,textcolor);
+			
+			//+1
+			//putpixel(x-2,y+1,textcolor);
+			//putpixel(x-1,y+1,textcolor);
+			//putpixel(x-0,y+1,textcolor);
+			//putpixel(x+1,y+1,textcolor);
+			putpixel(x+2,y+1,textcolor);
+			
+			//+2
+			putpixel(x-2,y+2,textcolor);
+			//putpixel(x-1,y+2,textcolor);
+			//putpixel(x-0,y+2,textcolor);
+			//putpixel(x+1,y+2,textcolor);
+			putpixel(x+2,y+2,textcolor);
+			
+			//+3
+    		//putpixel(x-2,y+3,textcolor);
+			putpixel(x-1,y+3,textcolor);
+			putpixel(x-0,y+3,textcolor);
+			putpixel(x+1,y+3,textcolor);
+			//putpixel(x+2,y+3,textcolor);
+			break;
+		case '4':
+			//-3
+			//putpixel(x-2,y-3,textcolor);
+			//putpixel(x-1,y-3,textcolor);
+			//putpixel(x-0,y-3,textcolor);
+			putpixel(x+1,y-3,textcolor);
+			//putpixel(x+2,y-3,textcolor);
+			
+			//-2
+			//putpixel(x-2,y-2,textcolor);
+			//putpixel(x-1,y-2,textcolor);
+			putpixel(x-0,y-2,textcolor);
+			putpixel(x+1,y-2,textcolor);
+			//putpixel(x+2,y-2,textcolor);
+ 			
+ 			//-1
+ 			//putpixel(x-2,y-1,textcolor);
+			putpixel(x-1,y-1,textcolor);
+			//putpixel(x-0,y-1,textcolor);
+			putpixel(x+1,y-1,textcolor);
+			//putpixel(x+2,y-1,textcolor);
+			
+			//0
+			putpixel(x-2,y-0,textcolor);
+			//putpixel(x-1,y-0,textcolor);
+			//putpixel(x-0,y-0,textcolor);
+			putpixel(x+1,y-0,textcolor);
+			//putpixel(x+2,y-0,textcolor);
+			
+			//+1
+			putpixel(x-2,y+1,textcolor);
+			putpixel(x-1,y+1,textcolor);
+			putpixel(x-0,y+1,textcolor);
+			putpixel(x+1,y+1,textcolor);
+			putpixel(x+2,y+1,textcolor);
+			
+			//+2
+			//putpixel(x-2,y+2,textcolor);
+			//putpixel(x-1,y+2,textcolor);
+			//putpixel(x-0,y+2,textcolor);
+			putpixel(x+1,y+2,textcolor);
+			//putpixel(x+2,y+2,textcolor);
+			
+			//+3
+    		//putpixel(x-2,y+3,textcolor);
+			//putpixel(x-1,y+3,textcolor);
+			//putpixel(x-0,y+3,textcolor);
+			putpixel(x+1,y+3,textcolor);
+			//putpixel(x+2,y+3,textcolor);
+			break;
+			
+		case '5':
+			//-3
+			putpixel(x-2,y-3,textcolor);
+			putpixel(x-1,y-3,textcolor);
+			putpixel(x-0,y-3,textcolor);
+			putpixel(x+1,y-3,textcolor);
+			putpixel(x+2,y-3,textcolor);
+			
+			//-2
+			putpixel(x-2,y-2,textcolor);
+			//putpixel(x-1,y-2,textcolor);
+			//putpixel(x-0,y-2,textcolor);
+			//putpixel(x+1,y-2,textcolor);
+			//putpixel(x+2,y-2,textcolor);
+ 			
+ 			//-1
+ 			putpixel(x-2,y-1,textcolor);
+			putpixel(x-1,y-1,textcolor);
+			putpixel(x-0,y-1,textcolor);
+			putpixel(x+1,y-1,textcolor);
+			//putpixel(x+2,y-1,textcolor);
+			
+			//0
+			//putpixel(x-2,y-0,textcolor);
+			//putpixel(x-1,y-0,textcolor);
+			//putpixel(x-0,y-0,textcolor);
+			//putpixel(x+1,y-0,textcolor);
+			putpixel(x+2,y-0,textcolor);
+			
+			//+1
+			//putpixel(x-2,y+1,textcolor);
+			//putpixel(x-1,y+1,textcolor);
+			//putpixel(x-0,y+1,textcolor);
+			//putpixel(x+1,y+1,textcolor);
+			putpixel(x+2,y+1,textcolor);
+			
+			//+2
+			putpixel(x-2,y+2,textcolor);
+			//putpixel(x-1,y+2,textcolor);
+			//putpixel(x-0,y+2,textcolor);
+			//putpixel(x+1,y+2,textcolor);
+			putpixel(x+2,y+2,textcolor);
+			
+			//+3
+    		//putpixel(x-2,y+3,textcolor);
+			putpixel(x-1,y+3,textcolor);
+			putpixel(x-0,y+3,textcolor);
+			putpixel(x+1,y+3,textcolor);
+			//putpixel(x+2,y+3,textcolor);
+			
+			break;
+			
+			case '6':
+			//-3
+			//putpixel(x-2,y-3,textcolor);
+			//putpixel(x-1,y-3,textcolor);
+			putpixel(x-0,y-3,textcolor);
+			putpixel(x+1,y-3,textcolor);
+			//putpixel(x+2,y-3,textcolor);
+			
+			//-2
+			//putpixel(x-2,y-2,textcolor);
+			putpixel(x-1,y-2,textcolor);
+			//putpixel(x-0,y-2,textcolor);
+			//putpixel(x+1,y-2,textcolor);
+			//putpixel(x+2,y-2,textcolor);
+ 			
+ 			//-1
+ 			putpixel(x-2,y-1,textcolor);
+			//putpixel(x-1,y-1,textcolor);
+			//putpixel(x-0,y-1,textcolor);
+			//putpixel(x+1,y-1,textcolor);
+			//putpixel(x+2,y-1,textcolor);
+			
+			//0
+			putpixel(x-2,y-0,textcolor);
+			putpixel(x-1,y-0,textcolor);
+			putpixel(x-0,y-0,textcolor);
+			putpixel(x+1,y-0,textcolor);
+			//putpixel(x+2,y-0,textcolor);
+			
+			//+1
+			putpixel(x-2,y+1,textcolor);
+			//putpixel(x-1,y+1,textcolor);
+			//putpixel(x-0,y+1,textcolor);
+			//putpixel(x+1,y+1,textcolor);
+			putpixel(x+2,y+1,textcolor);
+			
+			//+2
+			putpixel(x-2,y+2,textcolor);
+			//putpixel(x-1,y+2,textcolor);
+			//putpixel(x-0,y+2,textcolor);
+			//putpixel(x+1,y+2,textcolor);
+			putpixel(x+2,y+2,textcolor);
+			
+			//+3
+    		//putpixel(x-2,y+3,textcolor);
+			putpixel(x-1,y+3,textcolor);
+			putpixel(x-0,y+3,textcolor);
+			putpixel(x+1,y+3,textcolor);
+			//putpixel(x+2,y+3,textcolor);
+			
+			break;
+			
+			case '7':
+			//-3
+			putpixel(x-2,y-3,textcolor);
+			putpixel(x-1,y-3,textcolor);
+			putpixel(x-0,y-3,textcolor);
+			putpixel(x+1,y-3,textcolor);
+			putpixel(x+2,y-3,textcolor);
+			
+			//-2
+			//putpixel(x-2,y-2,textcolor);
+			//putpixel(x-1,y-2,textcolor);
+			//putpixel(x-0,y-2,textcolor);
+			//putpixel(x+1,y-2,textcolor);
+			putpixel(x+2,y-2,textcolor);
+ 			
+ 			//-1
+ 			//putpixel(x-2,y-1,textcolor);
+			//putpixel(x-1,y-1,textcolor);
+			//putpixel(x-0,y-1,textcolor);
+			putpixel(x+1,y-1,textcolor);
+			//putpixel(x+2,y-1,textcolor);
+			
+			//0
+			//putpixel(x-2,y-0,textcolor);
+			//putpixel(x-1,y-0,textcolor);
+			putpixel(x-0,y-0,textcolor);
+			//putpixel(x+1,y-0,textcolor);
+			//putpixel(x+2,y-0,textcolor);
+			
+			//+1
+			//putpixel(x-2,y+1,textcolor);
+			putpixel(x-1,y+1,textcolor);
+			//putpixel(x-0,y+1,textcolor);
+			//putpixel(x+1,y+1,textcolor);
+			//putpixel(x+2,y+1,textcolor);
+			
+			//+2
+			//putpixel(x-2,y+2,textcolor);
+			putpixel(x-1,y+2,textcolor);
+			//putpixel(x-0,y+2,textcolor);
+			//putpixel(x+1,y+2,textcolor);
+			//putpixel(x+2,y+2,textcolor);
+			
+			//+3
+    		//putpixel(x-2,y+3,textcolor);
+			putpixel(x-1,y+3,textcolor);
+			//putpixel(x-0,y+3,textcolor);
+			//putpixel(x+1,y+3,textcolor);
+			//putpixel(x+2,y+3,textcolor);
+			
+			break;
+			
+			case '8':
+			//-3
+			//putpixel(x-2,y-3,textcolor);
+			putpixel(x-1,y-3,textcolor);
+			putpixel(x-0,y-3,textcolor);
+			putpixel(x+1,y-3,textcolor);
+			//putpixel(x+2,y-3,textcolor);
+			
+			//-2
+			putpixel(x-2,y-2,textcolor);
+			//putpixel(x-1,y-2,textcolor);
+			//putpixel(x-0,y-2,textcolor);
+			//putpixel(x+1,y-2,textcolor);
+			putpixel(x+2,y-2,textcolor);
+ 			
+ 			//-1
+ 			putpixel(x-2,y-1,textcolor);
+			//putpixel(x-1,y-1,textcolor);
+			//putpixel(x-0,y-1,textcolor);
+			//putpixel(x+1,y-1,textcolor);
+			putpixel(x+2,y-1,textcolor);
+			
+			//0
+			//putpixel(x-2,y-0,textcolor);
+			putpixel(x-1,y-0,textcolor);
+			putpixel(x-0,y-0,textcolor);
+			putpixel(x+1,y-0,textcolor);
+			//putpixel(x+2,y-0,textcolor);
+			
+			//+1
+			putpixel(x-2,y+1,textcolor);
+			//putpixel(x-1,y+1,textcolor);
+			//putpixel(x-0,y+1,textcolor);
+			//putpixel(x+1,y+1,textcolor);
+			putpixel(x+2,y+1,textcolor);
+			
+			//+2
+			putpixel(x-2,y+2,textcolor);
+			//putpixel(x-1,y+2,textcolor);
+			//putpixel(x-0,y+2,textcolor);
+			//putpixel(x+1,y+2,textcolor);
+			putpixel(x+2,y+2,textcolor);
+			
+			//+3
+    		//putpixel(x-2,y+3,textcolor);
+			putpixel(x-1,y+3,textcolor);
+			putpixel(x-0,y+3,textcolor);
+			putpixel(x+1,y+3,textcolor);
+			//putpixel(x+2,y+3,textcolor);
+			
+			break;
+			
+			case '9':
+			//-3
+			//putpixel(x-2,y-3,textcolor);
+			putpixel(x-1,y-3,textcolor);
+			putpixel(x-0,y-3,textcolor);
+			putpixel(x+1,y-3,textcolor);
+			//putpixel(x+2,y-3,textcolor);
+			
+			//-2
+			putpixel(x-2,y-2,textcolor);
+			//putpixel(x-1,y-2,textcolor);
+			//putpixel(x-0,y-2,textcolor);
+			//putpixel(x+1,y-2,textcolor);
+			putpixel(x+2,y-2,textcolor);
+ 			
+ 			//-1
+ 			putpixel(x-2,y-1,textcolor);
+			//putpixel(x-1,y-1,textcolor);
+			//putpixel(x-0,y-1,textcolor);
+			//putpixel(x+1,y-1,textcolor);
+			putpixel(x+2,y-1,textcolor);
+			
+			//0
+			//putpixel(x-2,y-0,textcolor);
+			putpixel(x-1,y-0,textcolor);
+			putpixel(x-0,y-0,textcolor);
+			putpixel(x+1,y-0,textcolor);
+			putpixel(x+2,y-0,textcolor);
+			
+			//+1
+			//putpixel(x-2,y+1,textcolor);
+			//putpixel(x-1,y+1,textcolor);
+			//putpixel(x-0,y+1,textcolor);
+			//putpixel(x+1,y+1,textcolor);
+			putpixel(x+2,y+1,textcolor);
+			
+			//+2
+			//putpixel(x-2,y+2,textcolor);
+			//putpixel(x-1,y+2,textcolor);
+			//putpixel(x-0,y+2,textcolor);
+			putpixel(x+1,y+2,textcolor);
+			//putpixel(x+2,y+2,textcolor);
+			
+			//+3
+    		//putpixel(x-2,y+3,textcolor);
+			putpixel(x-1,y+3,textcolor);
+			putpixel(x-0,y+3,textcolor);
+			//putpixel(x+1,y+3,textcolor);
+			//putpixel(x+2,y+3,textcolor);
+			
+			break;
+		
+			case '0':
+			//-3
+			//putpixel(x-2,y-3,textcolor);
+			putpixel(x-1,y-3,textcolor);
+			putpixel(x-0,y-3,textcolor);
+			putpixel(x+1,y-3,textcolor);
+			//putpixel(x+2,y-3,textcolor);
+			
+			//-2
+			putpixel(x-2,y-2,textcolor);
+			//putpixel(x-1,y-2,textcolor);
+			//putpixel(x-0,y-2,textcolor);
+			//putpixel(x+1,y-2,textcolor);
+			putpixel(x+2,y-2,textcolor);
+ 			
+ 			//-1
+ 			putpixel(x-2,y-1,textcolor);
+			//putpixel(x-1,y-1,textcolor);
+			//putpixel(x-0,y-1,textcolor);
+			putpixel(x+1,y-1,textcolor);
+			putpixel(x+2,y-1,textcolor);
+			
+			//0
+			putpixel(x-2,y-0,textcolor);
+			//putpixel(x-1,y-0,textcolor);
+			putpixel(x-0,y-0,textcolor);
+			//putpixel(x+1,y-0,textcolor);
+			putpixel(x+2,y-0,textcolor);
+			
+			//+1
+			putpixel(x-2,y+1,textcolor);
+			putpixel(x-1,y+1,textcolor);
+			//putpixel(x-0,y+1,textcolor);
+			//putpixel(x+1,y+1,textcolor);
+			putpixel(x+2,y+1,textcolor);
+			
+			//+2
+			putpixel(x-2,y+2,textcolor);
+			//putpixel(x-1,y+2,textcolor);
+			//putpixel(x-0,y+2,textcolor);
+			//putpixel(x+1,y+2,textcolor);
+			putpixel(x+2,y+2,textcolor);
+			
+			//+3
+    		//putpixel(x-2,y+3,textcolor);
+			putpixel(x-1,y+3,textcolor);
+			putpixel(x-0,y+3,textcolor);
+			putpixel(x+1,y+3,textcolor);
+			//putpixel(x+2,y+3,textcolor);
+			
+			break;				
 		default:
 			break;
 	}

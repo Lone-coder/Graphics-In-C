@@ -6,6 +6,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+
 #define FALSE 0
 #define TRUE 1
 #define OnUpdate() while(1)
@@ -15,65 +16,80 @@
 // Windows data types
 HANDLE wHnd;
 HANDLE rHnd;
-SMALL_RECT windowSize;
 COORD bufferSize;
 COORD characterBufferSize;
 COORD characterPosition;
+SMALL_RECT windowSize;
 SMALL_RECT consoleWriteArea ;
 CHAR_INFO *consoleBuffer;
 
-short i,j;
+int i,j;
 
 int screenWidth;
 int screenHeight;
 
 int bgcolor=0x00F0;
+const char defaultchar=219; 
+
+LARGE_INTEGER freq;
+float currenttime;
+float prevtime;
+float deltatime=1;
+int FirstTime=TRUE;
 
 enum Color
 {
-    FG_BLACK			= 0x0000,
-    FG_DARK_BLUE   		= 0x0001,
-    FG_DARK_GREEN   	= 0x0002,
-    FG_DARK_CYAN    	= 0x0003,
-    FG_DARK_RED     	= 0x0004,
-    FG_DARK_MAGENTA 	= 0x0005,
-    FG_DARK_YELLOW  	= 0x0006,
-    FG_GREY				= 0x0007,
-    FG_DARK_GREY    	= 0x0008,
-    FG_BLUE				= 0x0009,
-    FG_GREEN			= 0x000A,
-    FG_CYAN				= 0x000B,
-    FG_RED				= 0x000C,
-    FG_MAGENTA			= 0x000D,
-    FG_YELLOW			= 0x000E,
-    FG_WHITE			= 0x000F,
-    BG_BLACK			= 0x0000,
-    BG_DARK_BLUE		= 0x0010,
-    BG_DARK_GREEN		= 0x0020,
-    BG_DARK_CYAN		= 0x0030,
-    BG_DARK_RED			= 0x0040,
-    BG_DARK_MAGENTA		= 0x0050,
-    BG_DARK_YELLOW		= 0x0060,
-    BG_GREY				= 0x0070,
-    BG_DARK_GREY		= 0x0080,
-    BG_BLUE				= 0x0090,
-    BG_GREEN			= 0x00A0,
-    BG_CYAN				= 0x00B0,
-    BG_RED				= 0x00C0,
-    BG_MAGENTA			= 0x00D0,
-    BG_YELLOW			= 0x00E0,
-    BG_WHITE			= 0x00F0,
+    BLACK			= 0x0000,
+    DARK_BLUE   	= 0x0001,
+    DARK_GREEN   	= 0x0002,
+    DARK_CYAN    	= 0x0003,
+    DARK_RED     	= 0x0004,
+    DARK_MAGENTA 	= 0x0005,
+    DARK_YELLOW  	= 0x0006,
+    GREY			= 0x0007,
+    DARK_GREY    	= 0x0008,
+    BLUE			= 0x0009,
+    GREEN			= 0x000A,
+    CYAN			= 0x000B,
+    RED				= 0x000C,
+    MAGENTA			= 0x000D,
+    YELLOW			= 0x000E,
+    WHITE			= 0x000F
 };
 
-void CreateConsole(char appName[],int screenW,int screenH,int fontW,int fontH)
+int color[16]={	
+	0x0000,
+	0x0001,
+	0x0002,
+	0x0003,
+	0x0004,
+	0x0005,
+	0x0006,
+	0x0007,
+	0x0008,
+	0x0009,
+	0x000A,
+	0x000B,
+	0x000C,
+	0x000D,
+	0x000E,
+	0x000F
+};
+
+void CreateConsole(const char *AppName,int screenW,int screenH,int fontW,int fontH)
 {
+	wHnd=GetStdHandle(STD_OUTPUT_HANDLE); 
+    rHnd=GetStdHandle(STD_INPUT_HANDLE);
+    
+	QueryPerformanceFrequency(&freq);
+	
     screenWidth=screenW;
     screenHeight=screenH;
 
     windowSize.Left=0;
     windowSize.Top=0;
-    windowSize.Right=screenWidth - 1;
-    windowSize.Bottom=screenHeight - 1;
+    windowSize.Right=screenWidth-1;
+    windowSize.Bottom=screenHeight-1;
 
     bufferSize.X=screenWidth;
     bufferSize.Y=screenHeight;
@@ -91,21 +107,21 @@ void CreateConsole(char appName[],int screenW,int screenH,int fontW,int fontH)
 
     consoleBuffer=(CHAR_INFO*)malloc(screenWidth*screenHeight*sizeof(CHAR_INFO));
 
-    wHnd=GetStdHandle(STD_OUTPUT_HANDLE);
-    rHnd=GetStdHandle(STD_INPUT_HANDLE);
-
     CONSOLE_FONT_INFOEX cfi;
     cfi.cbSize = sizeof(cfi);
     cfi.nFont = 0;
     cfi.dwFontSize.X = fontW;
     cfi.dwFontSize.Y = fontH;
-    cfi.FontFamily = FF_DONTCARE;
-    cfi.FontWeight = FW_NORMAL;
+    cfi.FontFamily = 0;
+    cfi.FontWeight =0;
 
-    SetConsoleTitle(appName);
-    SetCurrentConsoleFontEx(wHnd,FALSE,&cfi);
+
+    SetConsoleTitle(AppName);
     SetConsoleWindowInfo(wHnd,TRUE,&windowSize);
+    SetCurrentConsoleFontEx(wHnd,TRUE,&cfi);
     SetConsoleScreenBufferSize(wHnd, bufferSize);
+    SetConsoleMode(rHnd,ENABLE_MOUSE_INPUT|ENABLE_WINDOW_INPUT);
+    
 }
 
 int screenwidth()
@@ -118,13 +134,13 @@ int screenheight()
 	return screenHeight;
 }
 
-void clearbuffer()
+clearbuffer()
 {
-    for(i=0; i<screenHeight; i++)
+    for(i=0; i<screenheight(); i++)
     {
-        for(j=0; j<screenWidth; j++)
+        for(j=0; j<screenwidth(); j++)
         {
-            consoleBuffer[j +screenWidth* i].Char.AsciiChar =' ';
+            consoleBuffer[j +screenWidth* i].Char.AsciiChar =defaultchar;
             consoleBuffer[j +screenWidth* i].Attributes=bgcolor;
         }
     }
@@ -133,74 +149,33 @@ void clearbuffer()
 void SetBGcolor(int color)
 {
 	bgcolor=color;
-}
-
-int FGtoBG(int FGcolor)
-{
-		switch(FGcolor)
-		{
-			case FG_DARK_BLUE:
-				return BG_DARK_BLUE;
-
-		    case FG_DARK_GREEN:
-		    	return BG_DARK_GREEN;
-		    	
-		    case FG_DARK_CYAN:
-		    	return BG_DARK_CYAN;
-		    	
-		    case FG_DARK_RED:
-		    	return BG_DARK_RED;
-		    	
-		    case FG_DARK_MAGENTA:
-		    	return BG_DARK_MAGENTA;
-		    	
-		    case FG_DARK_YELLOW:
-		    	return BG_DARK_YELLOW;
-		    	
-		    case FG_GREY:
-				return BG_GREY;
-						
-		    case FG_DARK_GREY:
-			    return BG_DARK_GREY;	
-			    
-		    case FG_BLUE:
-				return BG_BLUE;
-						
-		    case FG_GREEN:
-				return BG_GREEN;
-				
-		    case FG_CYAN:
-				return BG_CYAN;
-						
-		    case FG_RED:
-				return BG_RED;
-						
-		    case FG_MAGENTA:
-				return BG_MAGENTA;
-				
-		    case FG_YELLOW:
-				return BG_YELLOW;
-				
-		    case FG_WHITE:		
-		    	return BG_WHITE;
-		    	
-		    default:
-		    	return BG_BLACK;
-
-		}
+	clearbuffer();
 }
 
 void DrawFrame(int clear)
 {
-    WriteConsoleOutput(wHnd,consoleBuffer, characterBufferSize, characterPosition, &consoleWriteArea);
-    if(clear)
-    	clearbuffer();
+	WriteConsoleOutputA(wHnd,consoleBuffer,characterBufferSize, characterPosition, &consoleWriteArea);
+	
+	if(!FirstTime)
+	{
+		currenttime=GetCurrentTime();
+		deltatime=currenttime-prevtime;
+		prevtime=currenttime;		
+	}
+	
+	if(clear)
+		clearbuffer();
+		
+	FirstTime=FALSE;
 }
 
 void putpixel(int x,int y,int color)
 {
-        consoleBuffer[x +screenWidth* y].Char.AsciiChar = 219;
-        consoleBuffer[x +screenWidth* y].Attributes =color | bgcolor;
+	if(x<screenwidth() && x>0 && y<screenheight() && y>0)
+	{
+    	consoleBuffer[x + screenWidth * y].Char.AsciiChar = defaultchar;
+    	consoleBuffer[x + screenWidth * y].Attributes =	color;		
+	}
 }
 
 void DrawLine(int x1, int y1, int x2, int y2,int col)
@@ -308,8 +283,15 @@ void DrawCircle(int xc, int yc, int r,int col)
     }
 }
 
-void DrawRect(int x1,int y1,int x2,int y2,int color)
+void DrawRect(int ox,int oy,int width,int height,int color)
 {
+	int x1,x2,y1,y2;
+	
+	x1=ox-(width/2);
+	x2=ox+(width/2);
+	y1=oy-(height/2);
+	y2=oy+(height/2);
+	
 	for(i=x1;i<=x2;i++)
 	{
 		for(j=y1;j<=y2;j++)
@@ -358,14 +340,54 @@ void Fillrect(int x1,int y1,int x2,int y2,int color)
 	}
 }
 
+DrawGrid(int ox,int oy,int width,int height,int col,int row,int color)
+{
+	int offsetx=width/col;
+	int offsety=height/row;
+	
+	int x1=ox-(width/2);
+	int x2=ox+(width/2);
+	int y1=oy-(height/2);
+	int y2=oy+(height/2);
+	
+	int r=x1,c=y1;
+	
+	while(r<x2)
+	{
+		DrawLine(r,y1,r,y2,color);
+		r+=offsetx;
+	}
+	
+	while(c<y2)
+	{
+		DrawLine(x1,c,x2,c,color);
+		c+=offsety;
+	}
+}
 void UpdateRot(double ang,int *x,int *y)
 {
     double angle=(ang*M_PI)/180;
     
 	*x=*x*cos(angle)-*y*sin(angle);
-	*y=*x*sin(angle)+*y*cos(angle);
-	
+	*y=*x*sin(angle)+*y*cos(angle);	
 }
 
+int random(int min,int max)
+{
+	return min+rand()%max;
+}
+
+int randcolor()
+{
+	int index=rand()%15;
+	return color[index];
+}
+
+float GetTime()
+{
+	LARGE_INTEGER time;
+	QueryPerformanceCounter(&time);
+	return (float)time.QuadPart/(float)freq.QuadPart;
+}
 
 #endif
