@@ -58,11 +58,25 @@ float VectMag(vect2 v)
 {
 	return sqrt(v.x * v.x + v.y * v.y);	
 }  
+float VectSqrMag(vect2 v)
+{
+	return v.x * v.x + v.y * v.y;
+}
 
 float VectDot(vect2 v1,vect2 v2)
 {
 	return v1.x * v2.x + v1.y * v2.y;
 }
 
+void NoramalizeVect2(vect2 v,vect2 *n)
+{
+	int mag=VectMag(v);
+	n->x=v.x/mag;
+	n->y=v.y/mag;
+}
 
+float AngleBwVect(vect2 v1,vect2 v2)
+{
+	return acos((double)VectDot(v1,v2)/(VectMag(v1)*VectMag(v2)));
+}
 #endif

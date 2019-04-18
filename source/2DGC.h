@@ -5,7 +5,7 @@
 #include<math.h>
 #include<stdio.h>
 #include<stdlib.h>
-
+#include<stdbool.h>
 
 #define FALSE 0
 #define TRUE 1
@@ -32,10 +32,7 @@ int bgcolor=0x00F0;
 const char defaultchar=219; 
 
 LARGE_INTEGER freq;
-float currenttime;
-float prevtime;
-float deltatime=1;
-int FirstTime=TRUE;
+float deltatime=0.01;
 
 enum Color
 {
@@ -136,6 +133,7 @@ int screenheight()
 
 clearbuffer()
 {
+	int i,j;
     for(i=0; i<screenheight(); i++)
     {
         for(j=0; j<screenwidth(); j++)
@@ -154,19 +152,10 @@ void SetBGcolor(int color)
 
 void DrawFrame(int clear)
 {
-	WriteConsoleOutputA(wHnd,consoleBuffer,characterBufferSize, characterPosition, &consoleWriteArea);
-	
-	if(!FirstTime)
-	{
-		currenttime=GetCurrentTime();
-		deltatime=currenttime-prevtime;
-		prevtime=currenttime;		
-	}
+	WriteConsoleOutput(wHnd,consoleBuffer,characterBufferSize, characterPosition, &consoleWriteArea);
 	
 	if(clear)
 		clearbuffer();
-		
-	FirstTime=FALSE;
 }
 
 void putpixel(int x,int y,int color)
@@ -292,11 +281,11 @@ void DrawRect(int ox,int oy,int width,int height,int color)
 	y1=oy-(height/2);
 	y2=oy+(height/2);
 	
-	for(i=x1;i<=x2;i++)
+	for(i=x1;i<x2;i++)
 	{
-		for(j=y1;j<=y2;j++)
+		for(j=y1;j<y2;j++)
 		{
-			if(i==x1 || i==x2 || j==y1 || j==y2)
+			if(i==x1 || i==x2-1 || j==y1 || j==y2-1)
 				putpixel(i,j,color);
 		}
 	}
@@ -308,34 +297,53 @@ void drawline(int sx, int ex, int ny,int col)
 	int i;
 	for (i = sx; i <= ex; i++)
 		putpixel(i, ny,col);
-};
+}
 
 void FillCircle(int xc, int yc, int r,int col)
-	{
-		int x = 0;
-		int y = r;
-		int p = 3 - 2 * r;
-		if (!r) return;
+{
+	int x = 0;
+	int y = r;
+	int p = 3 - 2 * r;
+	if (!r) return;
 
-		while (y >= x)
-		{
-			drawline(xc - x, xc + x, yc - y,col);
-			drawline(xc - y, xc + y, yc - x,col);
-			drawline(xc - x, xc + x, yc + y,col);
-			drawline(xc - y, xc + y, yc + x,col);
-			if (p < 0) p += 4 * x++ + 6;
-			else p += 4 * (x++ - y--) + 10;
-		}
-	};
+	while (y >= x)
+	{
+		drawline(xc - x, xc + x, yc - y,col);
+		drawline(xc - y, xc + y, yc - x,col);
+		drawline(xc - x, xc + x, yc + y,col);
+		drawline(xc - y, xc + y, yc + x,col);
+		if (p < 0) p += 4 * x++ + 6;
+		else p += 4 * (x++ - y--) + 10;
+	}
+}
 	
 // Fills a rectangle 
 void Fillrect(int x1,int y1,int x2,int y2,int color)
 {
+	int i,j;
 	for(i=x1;i<x2;i++)
 	{
-		for(j=y1;j<=y2;j++)
+		for(j=y1;j<y2;j++)
 		{
 			putpixel(i,j,color);
+		}
+	}
+}
+
+void Fillrect2(int ox,int oy,int width,int height,int color)
+{
+	int x1,x2,y1,y2;
+	int i,j;
+	x1=ox-(width/2);
+	x2=ox+(width/2);
+	y1=oy-(height/2);
+	y2=oy+(height/2);
+	
+	for(i=x1;i<x2;i++)
+	{
+		for(j=y1;j<y2;j++)
+		{
+				putpixel(i,j,color);
 		}
 	}
 }
@@ -364,6 +372,7 @@ DrawGrid(int ox,int oy,int width,int height,int col,int row,int color)
 		c+=offsety;
 	}
 }
+
 void UpdateRot(double ang,int *x,int *y)
 {
     double angle=(ang*M_PI)/180;
@@ -387,7 +396,7 @@ float GetTime()
 {
 	LARGE_INTEGER time;
 	QueryPerformanceCounter(&time);
-	return (float)time.QuadPart/(float)freq.QuadPart;
+	return (float)time.QuadPart/freq.QuadPart;
 }
 
 #endif

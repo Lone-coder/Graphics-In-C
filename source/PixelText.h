@@ -5,6 +5,7 @@
 
 void putchara(char c,int x,int y,int textcolor)
 {
+	//textcolor=randcolor();
 	switch(c)
 	{
 		case 'A':

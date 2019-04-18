@@ -25,6 +25,7 @@ typedef struct panel
 }Panel;
 
 typedef void (*OnClickFunction)(void);
+
 typedef struct button
 {
 	int ox,oy;
@@ -32,6 +33,7 @@ typedef struct button
 	int color;
 	int textColor;
 	const char *label;
+	int highlightcol;
 	OnClickFunction Onclick;
 }Button;
 
@@ -187,7 +189,8 @@ void GetInput()
         					if( offsetx>Buttons[i].ox-(Buttons[i].width/2) && offsetx<Buttons[i].ox+(Buttons[i].width/2) 
 							&& offsety>Buttons[i].oy-(Buttons[i].height/2) &&offsety<Buttons[i].oy+(Buttons[i].height/2))
 							{
-                				DrawRect(Buttons[i].ox,Buttons[i].oy,Buttons[i].width+6,Buttons[i].height+5,randcolor());							
+                				DrawRect(Buttons[i].ox,Buttons[i].oy,Buttons[i].width+6,Buttons[i].height+5,randcolor());
+								Buttons[i].color=Buttons[i].highlightcol;							
 							}
 	
 						}

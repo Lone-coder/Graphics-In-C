@@ -1,89 +1,105 @@
 #include "2DGC.h"
+#include "PixelText.h"
 
 DWORD cNumRead, fdwMode, n; 
-INPUT_RECORD irInBuf[128]; 
-int offsetx, offsety;
+INPUT_RECORD irInBuf[32];
 
 const float speed=1; 
+int score=0;
 
-typedef struct POS{
+typedef struct POSITION_2D{
 	float x;
 	float y;
-}pos;
+}POS;
 
 typedef struct SNAKE{
-	pos snakepos;
+	POS snakepos;
 	int size;
 }Snake;
 
-void GetInput();
-
 Snake snake;
-pos *poshist;
-int oldsize;
+POS *poshist;
+
+char *toString(int num);
+void printString(char *s,int x,int y,int color);
 
 void main()
 {
-	CreateConsole("Snake Game",100,60,10,10);
+	CreateConsole("Snake Game",80,60,12,12);
 	SetBGcolor(BLACK);
 
-	snake.snakepos.x=30;
-	snake.snakepos.y=30;
+	snake.snakepos.x=screenwidth()/2;
+	snake.snakepos.y=screenheight()/2;
 	snake.size=1;
 	
-	poshist=(pos*)malloc(sizeof(pos)*snake.size);
+	poshist=(POS*)malloc(sizeof(POS)*snake.size);
 	
-	poshist[0].x=30;
-	poshist[0].x=30;
+	poshist[0].x=snake.snakepos.x;
+	poshist[0].y=snake.snakepos.y;
+	
+	int fx=random(1,screenwidth()-3);
+	int fy=random(1,screenheight()-3);
 	
 	OnUpdate()
-	{		
-		GetInput();
-		incsize();
-		updatesnake();
-		drawsnake();
-		DrawFrame(TRUE);
+	{	
+		DrawRect(screenwidth()/2,screenheight()/2+4,screenwidth()-1,screenheight()-10,WHITE);
+		printString("SNAKE GAME",3,4,GREEN);	
 		
+		if(snake.snakepos.x==fx && snake.snakepos.y==fy)
+		{
+			score+=1;
+			fx=random(1,screenwidth()-3);
+			fy=random(1,screenheight()-3);
+			putpixel(fx,fy,DARK_RED);
+			incsize();
+		}
+		else
+			putpixel(fx,fy,DARK_RED);
+		
+		updatesnake();	
+		drawsnake();
+		GetInput();
+		DrawFrame(TRUE);
 	}
 }
 
-void incsize()
+incsize()
 {
-	if(snake.size>oldsize)
-	{
-		realloc(poshist,sizeof(pos)*3);
-		oldsize=snake.size;
-	}
+	snake.size++;
+	realloc(poshist,sizeof(POS)*snake.size);
 }
 
-void updatesnake()
+updatesnake()
 {
 	int i;
 	
-	for(i=0;i<=snake.size;i++)
+	for(i=snake.size;i>0;i--)
 	{
-		poshist[i+1]=poshist[i];
+		poshist[i]=poshist[i-1];
 	}
 	
 	poshist[0].x=snake.snakepos.x;
 	poshist[0].y=snake.snakepos.y;
 }
 
-void drawsnake()
+drawsnake()
 {
 	int i;
 	
 	for(i=0;i<snake.size;i++)
 	{
-		putpixel(poshist[i].x,poshist[i].y,WHITE);
+		if(i%2==0)
+			putpixel(poshist[i].x,poshist[i].y,DARK_GREEN);
+		else
+			putpixel(poshist[i].x,poshist[i].y,GREEN);
 	}
 }
 
-void GetInput()
+GetInput()
 {
         ReadConsoleInput(rHnd,      // input buffer handle 
                 		irInBuf,     // buffer to read into 
-                		128,         // size of read buffer 
+                		32,         // size of read buffer 
                 		&cNumRead); // number of records read  
  
         for (n = 0; n< cNumRead; n++) 
@@ -92,32 +108,66 @@ void GetInput()
             { 
                 case KEY_EVENT: 
                     	if(irInBuf[n].Event.KeyEvent.wVirtualKeyCode==VK_UP)
-							snake.snakepos.y-=speed;
+                    	{
+                    		snake.snakepos.y-=speed;	
+						}
 							
                     	else if(irInBuf[n].Event.KeyEvent.wVirtualKeyCode==VK_DOWN)
-							snake.snakepos.y+=speed;
-						
+                    	{
+                    		snake.snakepos.y+=speed;	
+						}
+													
 						else if(irInBuf[n].Event.KeyEvent.wVirtualKeyCode==VK_RIGHT)
-							snake.snakepos.x+=speed;
-						
+						{
+							snake.snakepos.x+=speed;	
+						}
+							
 						else if(irInBuf[n].Event.KeyEvent.wVirtualKeyCode==VK_LEFT)
-							snake.snakepos.x-=speed;						
-						else if(irInBuf[n].Event.KeyEvent.wVirtualKeyCode==VK_TAB)
-							snake.size++;
-                    break; 
- 
-                case MOUSE_EVENT:
- 
-                case WINDOW_BUFFER_SIZE_EVENT:
- 
-                case FOCUS_EVENT:
- 
-                case MENU_EVENT: 
-                    break; 
- 
-                default: 
-                    break; 
+						{
+							snake.snakepos.x-=speed;	
+						}
+						else
+							return;
+							
+						if(snake.snakepos.x>screenwidth())
+							snake.snakepos.x=0;
+						if(snake.snakepos.x<0)
+							snake.snakepos.x=screenwidth();					
+						
+                    return;  
             } 
         }
 }
 
+void printString(char *s,int x,int y,int color)
+{
+	int i=0;
+	int space=0;
+	
+	while(*(s+i)!=0)
+	{
+		putchara(*(s+i),x+space,y,color);
+		space+=6;
+		i++;
+	}
+}
+
+
+char *toString(int num)
+{
+	int n=num;
+	int numdigits;
+	char *number_str;
+	
+	while(n!=0)
+	{
+		n=n/10;
+		numdigits++;
+	}
+	
+	number_str=(char*)malloc(sizeof(char)*numdigits);
+	
+	itoa(num,number_str,10);
+	
+	return number_str;	
+}
