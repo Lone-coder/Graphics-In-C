@@ -85,7 +85,7 @@ enum Color
 };
 
 
-void CreateConsole(char appName[],int screenW,int screenH,int fontW,int fontH)
+void CreateConsole(const char *appName,int screenW,int screenH,int fontW,int fontH)
 {
     screenWidth=screenW;
     screenHeight=screenH;
@@ -137,7 +137,7 @@ void clearbuffer()
         for(j=0; j<screenWidth; j++)
         {
             consoleBuffer[j +screenWidth* i].Char.AsciiChar =' ';
-            consoleBuffer[j +screenWidth* i].Attributes=BG_WHITE;
+            consoleBuffer[j +screenWidth* i].Attributes=BG_BLACK;
         }
     }
 }
@@ -255,8 +255,8 @@ void ProjectPoint(vector3 pin,vector3 *pout)
     else
     {
         Mat3x3 OrthoProj={
-            40,0,0,
-            0,40,0,
+            50,0,0,
+            0,50,0,
             0,0,0
         };
 
@@ -267,7 +267,7 @@ void ProjectPoint(vector3 pin,vector3 *pout)
 
 int tranX(int x)
 {
-    return (screenWidth/2)+x;
+    return x-(screenWidth/2);
 }
 
 int tranY(int y)
@@ -640,6 +640,14 @@ next4:
 
 }
 
+void DrawTriangle(triangle t)
+{
+	DrawLine(t.vertex1.x,t.vertex1.y,t.vertex2.x,t.vertex2.y,FG_WHITE);
+	DrawLine(t.vertex2.x,t.vertex2.y,t.vertex3.x,t.vertex3.y,FG_WHITE);
+	DrawLine(t.vertex3.x,t.vertex3.y,t.vertex1.x,t.vertex1.y,FG_WHITE);
+	
+	FillTriangle(t.vertex1.x,t.vertex1.y,t.vertex2.x,t.vertex2.y,t.vertex3.x,t.vertex3.y,FG_WHITE);
+}
 //for debug
 
 void printMat(double mat[3][1])

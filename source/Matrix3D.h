@@ -1,5 +1,5 @@
-#ifndef __MATRIX3D_H__
-#define __MATRIX3D_H__
+#ifndef _MATRIX3D_H_
+#define _MATRIX3D_H_
 
 #include "Geometry.h"
 

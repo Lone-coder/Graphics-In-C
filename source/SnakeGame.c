@@ -1,5 +1,5 @@
-#include "2DGC.h"
-#include "PixelText.h"
+#include "Headers/2DGC.h"
+#include "Headers/PixelText.h"
 
 DWORD cNumRead, fdwMode, n; 
 INPUT_RECORD irInBuf[32];
@@ -26,7 +26,7 @@ void printString(char *s,int x,int y,int color);
 void main()
 {
 	CreateConsole("Snake Game",80,60,12,12);
-	SetBGcolor(BLACK);
+	SetBgColor(BLACK);
 
 	snake.snakepos.x=screenwidth()/2;
 	snake.snakepos.y=screenheight()/2;
@@ -50,11 +50,11 @@ void main()
 			score+=1;
 			fx=random(1,screenwidth()-3);
 			fy=random(1,screenheight()-3);
-			putpixel(fx,fy,DARK_RED);
+			PutPixel(fx,fy,DARK_RED);
 			incsize();
 		}
 		else
-			putpixel(fx,fy,DARK_RED);
+			PutPixel(fx,fy,DARK_RED);
 		
 		updatesnake();	
 		drawsnake();
@@ -66,7 +66,7 @@ void main()
 incsize()
 {
 	snake.size++;
-	realloc(poshist,sizeof(POS)*snake.size);
+	poshist=realloc(poshist,sizeof(POS)*snake.size);
 }
 
 updatesnake()
@@ -89,9 +89,9 @@ drawsnake()
 	for(i=0;i<snake.size;i++)
 	{
 		if(i%2==0)
-			putpixel(poshist[i].x,poshist[i].y,DARK_GREEN);
+			PutPixel(poshist[i].x,poshist[i].y,DARK_GREEN);
 		else
-			putpixel(poshist[i].x,poshist[i].y,GREEN);
+			PutPixel(poshist[i].x,poshist[i].y,GREEN);
 	}
 }
 
@@ -146,7 +146,7 @@ void printString(char *s,int x,int y,int color)
 	
 	while(*(s+i)!=0)
 	{
-		putchara(*(s+i),x+space,y,color);
+		PutCharacter(*(s+i),x+space,y,color);
 		space+=6;
 		i++;
 	}

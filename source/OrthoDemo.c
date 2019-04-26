@@ -2,7 +2,7 @@
 
 void main()
 {
-	CreateConsole("Orthographic Demo",200,200,2,2);
+	CreateConsole("Orthographic Demo",300,200,2,2);
 
     OnStart()
     {
@@ -17,8 +17,8 @@ void main()
         initVector3(&p[7],1,-1,-1);
 
         UpdateRotY(0,TRUE);
-        UpdateRotX(30,TRUE);
-        UpdateRotZ(10,TRUE);
+        UpdateRotX(20,TRUE);
+        UpdateRotZ(0,TRUE);
     }
 
 	OnUpdate()
@@ -36,14 +36,14 @@ void main()
 		ProjectPoint(pr[7],&pp[7]);
 
 
-        putpixel(pp[0].x,pp[0].y,FG_BLUE);
-        putpixel(pp[1].x,pp[1].y,FG_BLUE);
-        putpixel(pp[2].x,pp[2].y,FG_BLUE);
-        putpixel(pp[3].x,pp[3].y,FG_BLUE);
-        putpixel(pp[4].x,pp[4].y,FG_BLUE);
-        putpixel(pp[5].x,pp[5].y,FG_BLUE);
-        putpixel(pp[6].x,pp[6].y,FG_BLUE);
-        putpixel(pp[7].x,pp[7].y,FG_BLUE);
+//        putpixel(pp[0].x,pp[0].y,FG_BLUE);
+//        putpixel(pp[1].x,pp[1].y,FG_BLUE);
+//        putpixel(pp[2].x,pp[2].y,FG_BLUE);
+//        putpixel(pp[3].x,pp[3].y,FG_BLUE);
+//        putpixel(pp[4].x,pp[4].y,FG_BLUE);
+//        putpixel(pp[5].x,pp[5].y,FG_BLUE);
+//        putpixel(pp[6].x,pp[6].y,FG_BLUE);
+//        putpixel(pp[7].x,pp[7].y,FG_BLUE);
 
 		DrawLine(pp[0].x,pp[0].y,pp[1].x,pp[1].y,FG_BLUE);
 		DrawLine(pp[1].x,pp[1].y,pp[2].x,pp[2].y,FG_CYAN);

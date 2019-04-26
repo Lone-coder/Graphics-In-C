@@ -1,35 +1,36 @@
-#include "ConsoleGUI.h"
+#include "Headers\ConsoleGUI.h"
 
 typedef struct BALL
 {
-	int ox,oy;
+	float ox,oy;
 	int radius;
 	int color;
-	float dy,dv;
+	float dv;
 	bool collided;
-	
-}Ball;
+	int mass;
+
+} Ball;
 
 Ball *balls;
 int nball=0;
-float gravity =30;	
+float gravity =30;
 float start,end;
-float FPS;
+int nCollisions;
+LARGE_INTEGER t1, t2;
 
 Createball(int ox,int oy,int radius,int color)
 {
 	nball++;
-		
+
 	if(nball==1)
 		balls=(Ball*)malloc(sizeof(Ball)*nball);
 	else
 		balls=(Ball*)realloc(balls,sizeof(Ball)*nball);
-		
+
 	balls[nball-1].ox=ox;
 	balls[nball-1].oy=oy;
 	balls[nball-1].radius=radius;
-	balls[nball-1].color=color;	
-	balls[nball-1].dy=0;
+	balls[nball-1].color=color;
 	balls[nball-1].dv=0;
 	balls[nball-1].collided=false;
 }
@@ -37,72 +38,62 @@ Createball(int ox,int oy,int radius,int color)
 DrawBall()
 {
 	int i=0;
-	
+
 	if(nball!=0)
 	{
-		for(i=0;i<nball;i++)
+		for(i=0; i<nball; i++)
 		{
-			DrawCircle(balls[i].ox,balls[i].oy,balls[i].radius,balls[i].color);
-		}		
+			DrawCircle(balls[i].ox, balls[i].oy, balls[i].radius, balls[i].color);
+		}
 	}
 }
 
 void main()
 {
 	CreateConsole("Physics Simulation",300,200,2,2);
-	SetBGcolor(BLACK);
-	
+	SetBgColor(BLACK);
+
+
+	QueryPerformanceFrequency(&freq);
+
 	OnUpdate()
 	{
-		//start=GetTime();
-		
-		printString(toString((int)FPS),3,4,WHITE);
-			
+		QueryPerformanceCounter(&t1);
+
 		if(GetAsyncKeyState(VK_SPACE) & 0x8000)
 		{
-			Createball(random(10,screenwidth()-30),random(10,screenheight()-30),10,randcolor());	
+			if(nball<100)
+				Createball(random(10,screenwidth()-30),random(20,screenheight()-50),random(1,5),randcolor());
 		}
-		
+
+		PrintString(ToString(nball),150,12,WHITE);
+
 		int i=0;
 		int j=0;
-		
-		
-		for(i=0;i<nball;i++)
-		{			
+
+		for(i=0; i<nball; i++)
+		{
 			if(!balls[i].collided)
 			{
-				balls[i].dv+=gravity*deltatime;
-				balls[i].dy+=balls[i].dv*deltatime;
-				balls[i].oy+=balls[i].dy*deltatime;	
+				balls[i].dv+=gravity*deltaTime;
+				balls[i].oy+=balls[i].dv*deltaTime;
 			}
-		
+
 			if(balls[i].radius+balls[i].oy>screenheight()-20)
 			{
-				balls[i].collided=true;		
+				balls[i].dv=-balls[i].dv;
+				balls[i].oy+=balls[i].dv*deltaTime;
 			}
-		
+
 		}
-		
-		
-		for(i=0;i<nball;i++)
-		{
-			for(j=i+1;j<nball;j++)
-			{
-				if( ((balls[i].ox-balls[j].ox)*(balls[i].ox-balls[j].ox) + (balls[i].oy-balls[j].oy)*(balls[i].oy-balls[j].oy) 
-				  ) < ((balls[i].radius+balls[j].radius) ))
-				  {
-				  	printString("COLLISION",150,4,WHITE);
-				  }
-			}
-		}
-		
+
+		QueryPerformanceCounter(&t2);
+
+		deltaTime = (t2.QuadPart - t1.QuadPart)/500.0;
+
 		DrawBall();
 		DrawFrame(true);
-			
-		end=GetTime();
-			
-		deltatime=end-start;
-		deltatime/=1000;
-		FPS=1/deltatime;
+
+
 	}
 }
