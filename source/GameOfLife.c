@@ -1,13 +1,13 @@
-#include "ConsoleGUI.h"
+#include "Headers/ConsoleGUI.h"
 
 void drawmode();
 
 void main()
 {
 	CreateConsole("Game of Life : Cellular Automata",150,100,6,6);
-	SetBGcolor(BLACK);
+	SetBgColor(BLACK);
 	
-	
+	int i,j;
 	//For GUI
 	
 	
@@ -25,8 +25,8 @@ void main()
 	
 	OnUpdate()
 	{
-		printString("GENERATION: ",10,screenheight()-10,WHITE);
-		printString(toString(generation),80,screenheight()-10,WHITE);
+		PrintString("GENERATION: ",40,screenheight()-10,WHITE);
+		PrintString(ToString(generation),80,screenheight()-10,WHITE);
 		
 		for(i=1;i<screenwidth()-1;i++)
 		{
@@ -47,9 +47,9 @@ void main()
 				}
 				
 				if(cells[i+j*screenwidth()]==1)
-					putpixel(i,j,color[i%16]);
+					PutPixel(i,j,YELLOW);
 				else
-					putpixel(i,j,BLACK);
+					PutPixel(i,j,BLACK);
 			}	
 		}
 		
