@@ -1,5 +1,5 @@
-#ifndef __3DGC_H__
-#define __3DGC_H__
+#ifndef _3DGC_H_
+#define _3DGC_H_
 
 #include<windows.h>
 #include<math.h>
@@ -11,6 +11,7 @@
 
 #include "Matrix3D.h"
 #include "Geometry.h"
+#include "PixelText.h"
 
 #define MAX(x,y)  x > y ? x : y
 #define MIN(x,y)  x < y ? x : y
@@ -78,12 +79,16 @@ int color[16]=
 	0x000F
 };
 
-int randcolor()
+int RandomColor()
 {
-	int index=rand()%15;
+	int index = rand()%15;
 	return color[index];
 }
 
+char RandomChar()
+{
+	return (char)(rand()%256);
+}
 
 void CreateConsole(const char *appName,int screenW,int screenH,int fontW,int fontH)
 {
@@ -148,36 +153,101 @@ int midY()
 	return screenheight()/2;
 }
 
-void clearbuffer()
+void putpixel(int x,int y,int color,char c)
+{
+	if(x>(-screenWidth/2) && x<(screenWidth/2) && y>(-screenHeight/2) && y<(screenHeight/2))
+	{
+		consoleBuffer[tranX(x) +screenWidth* tranY(y)].Char.AsciiChar = c;
+		consoleBuffer[tranX(x)+screenWidth* tranY(y)].Attributes = color;
+	}
+}
+
+//for text printing
+void PutPixel(int x,int y,int color)
+{
+	if(x<screenwidth() && x>0 && y<screenheight() && y>0)
+	{
+    	consoleBuffer[x + screenWidth * y].Char.AsciiChar = defaultChar;
+    	consoleBuffer[x + screenWidth * y].Attributes =	color;		
+	}
+}
+
+void PrintString(const char *s, int x, int y, int color)
+{
+	int i = 0;
+	int space = 0;
+	int tsize = ( stringsize(s) * 5 + stringsize(s)-1 );
+	int p = (tsize / 2);
+	x = x - p + 2;
+
+	while (*(s + i) != 0)
+	{
+		PutCharacter(*(s + i), x + space, y, color);
+		space += 7;
+		i++;
+	}
+}
+
+char *ToString(int numToConvert)
+{
+	int n = numToConvert;
+	int numdigits = 0;
+	char *numberInChar;
+
+	while (n != 0)
+	{
+		n = n / 10;
+		numdigits++;
+	}
+
+	numberInChar = (char*)malloc(sizeof(char)*numdigits);
+
+	itoa(numToConvert,numberInChar,10);
+
+	return numberInChar;
+}
+
+int stringsize(const char *s)
+{
+	int n = 0;
+
+	while (*(s + n) != 0)
+		n++;
+
+	return n;
+}
+
+void ClearBuffer()
 {
 	for(i=0; i<screenHeight; i++)
 	{
 		for(j=0; j<screenWidth; j++)
 		{
-			consoleBuffer[j +screenWidth* i].Char.AsciiChar =defaultChar;
-			consoleBuffer[j +screenWidth* i].Attributes=bgColor;
+			consoleBuffer[j +screenWidth* i].Char.AsciiChar = defaultChar;
+			consoleBuffer[j +screenWidth* i].Attributes = bgColor;
 		}
 	}
 }
 
 void SetBgColor(int color)
 {
-	bgColor=color;
-	clearbuffer();
+	bgColor = color;
+	ClearBuffer();
 }
 
 void DrawFrame()
 {
 	WriteConsoleOutputA(wHnd,consoleBuffer, characterBufferSize, characterPosition, &consoleWriteArea);
-	clearbuffer();
+	ClearBuffer();
 }
-
 
 Vector3 ProjectPoint(Vector3 v)
 {
 	Vector3 projected;
+	double d = 6;
+	double z = d - v.z;
 
-	Mat4x4 OrthoProj=
+	Mat4x4 OrthoProj =
 	{
 		scale,0,0,0,
 		0,scale,0,0,
@@ -185,19 +255,18 @@ Vector3 ProjectPoint(Vector3 v)
 		0,0,0,1
 	};
 
-	projected=matmul(OrthoProj,v);
+	projected = matmul(OrthoProj,v);
 
 	return projected;
 }
 
-
 Vector3 UpdateRotationZ(Vector3 toRotate,double ang)
 {
-	double angle=(ang*M_PI)/180;
+	double angle = (ang*M_PI)/180;
 
 	Vector3 rotated;
 
-	Mat4x4 rotZ=
+	Mat4x4 rotZ =
 	{
 		cos(angle),-sin(angle),0,0,
 		sin(angle),cos(angle),0,0,
@@ -213,11 +282,11 @@ Vector3 UpdateRotationZ(Vector3 toRotate,double ang)
 
 Vector3 UpdateRotationY(Vector3 toRotate,double ang)
 {
-	double angle=(ang*M_PI)/180;
+	double angle = (ang*M_PI)/180;
 
 	Vector3 rotated;
 
-	Mat4x4 rotY=
+	Mat4x4 rotY =
 	{
 		cos(angle),0,sin(angle),0,
 		0,1,0,0,
@@ -225,7 +294,7 @@ Vector3 UpdateRotationY(Vector3 toRotate,double ang)
 		0,0,0,1
 	};
 
-	rotated=matmul(rotY,toRotate);
+	rotated = matmul(rotY,toRotate);
 
 	return rotated;
 
@@ -233,11 +302,11 @@ Vector3 UpdateRotationY(Vector3 toRotate,double ang)
 
 Vector3 UpdateRotationX(Vector3 toRotate,double ang)
 {
-	double angle=(ang*M_PI)/180;
+	double angle = (ang*M_PI)/180;
 
 	Vector3 rotated;
 
-	Mat4x4 rotX=
+	Mat4x4 rotX =
 	{
 		1,0,0,0,
 		0,cos(angle),-sin(angle),0,
@@ -245,7 +314,7 @@ Vector3 UpdateRotationX(Vector3 toRotate,double ang)
 		0,0,0,1
 	};
 
-	rotated=matmul(rotX,toRotate);
+	rotated = matmul(rotX,toRotate);
 
 	return rotated;
 
@@ -255,7 +324,7 @@ Vector3 TranslateObject(Vector3 v,FLOATPOINT x,FLOATPOINT y,FLOATPOINT z)
 {
 	Vector3 translated;
 
-	Mat4x4 translate=
+	Mat4x4 translate =
 	{
 		1,0,0,x,
 		0,1,0,y,
@@ -263,9 +332,73 @@ Vector3 TranslateObject(Vector3 v,FLOATPOINT x,FLOATPOINT y,FLOATPOINT z)
 		0,0,0,1
 	};
 
-	translated=matmul(translate,v);
+	translated = matmul(translate,v);
 
 	return translated;
+}
+
+Object LoadOBJFile(const char *fileName)
+{
+	Object object;
+	object.nVertices = 0;
+	object.nTriangles = 0;
+	
+	Vector3 *vertices;
+
+	FILE *objFile = fopen(fileName,"r");
+
+	if(objFile==NULL)
+		return object;
+
+	char c;
+
+	int x,y,z;
+
+	while(c!=EOF)
+	{
+		c=fgetc(objFile);
+
+		if(c=='v' && fgetc(objFile)==' ')
+		{
+			object.nVertices++;
+
+			if(object.nVertices==1)
+				vertices = (Vector3*)malloc(sizeof(Vector3)*object.nVertices);
+			else
+				vertices = realloc(vertices,sizeof(Vector3)*object.nVertices);
+
+			fscanf(objFile,"%lf",&vertices[object.nVertices-1].x);
+			fscanf(objFile,"%lf",&vertices[object.nVertices-1].y);
+			fscanf(objFile,"%lf",&vertices[object.nVertices-1].z);
+			
+			vertices[object.nVertices-1].w = 1;
+		}
+
+		if(c=='f' && fgetc(objFile)==' ')
+		{
+			object.nTriangles++;
+
+			if(object.nTriangles==1)
+				object.triangles = (Triangle*)malloc(sizeof(Triangle)*object.nTriangles);
+			else
+				object.triangles = realloc(object.triangles,sizeof(Triangle)*object.nTriangles);
+
+			fscanf(objFile,"%d",&x);
+			fscanf(objFile,"%d",&y);
+			fscanf(objFile,"%d",&z);
+
+			object.triangles[object.nTriangles-1].vertex1 = vertices[x-1];
+			object.triangles[object.nTriangles-1].vertex2 = vertices[y-1];
+			object.triangles[object.nTriangles-1].vertex3 = vertices[z-1];
+
+		}
+	}
+	
+	free(vertices);
+
+	fclose(objFile);
+
+	return object;
 }
 
 int tranX(int x)
@@ -278,17 +411,7 @@ int tranY(int y)
 	return (screenHeight/2)-y;
 }
 
-void putpixel(int x,int y,int color)
-{
-	if(x>(-screenWidth/2) && x<(screenWidth/2) && y>(-screenHeight/2) && y<(screenHeight/2))
-	{
-		consoleBuffer[tranX(x) +screenWidth* tranY(y)].Char.AsciiChar = defaultChar;
-		consoleBuffer[tranX(x)+screenWidth* tranY(y)].Attributes =color;
-	}
-
-}
-
-void DrawLine(int x1, int y1, int x2, int y2,int col)
+void DrawLine(int x1, int y1, int x2, int y2,int col,char c)
 {
 	int x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
 	dx = x2 - x1;
@@ -313,7 +436,7 @@ void DrawLine(int x1, int y1, int x2, int y2,int col)
 			xe = x1;
 		}
 
-		putpixel(x, y,col);
+		putpixel(x, y,col,c);
 
 		for (i = 0; x<xe; i++)
 		{
@@ -328,7 +451,7 @@ void DrawLine(int x1, int y1, int x2, int y2,int col)
 					y = y - 1;
 				px = px + 2 * (dy1 - dx1);
 			}
-			putpixel(x, y,col);
+			putpixel(x, y,col,c);
 		}
 	}
 	else
@@ -346,7 +469,7 @@ void DrawLine(int x1, int y1, int x2, int y2,int col)
 			ye = y1;
 		}
 
-		putpixel(x, y,col);
+		putpixel(x, y,col,c);
 
 		for (i = 0; y<ye; i++)
 		{
@@ -361,12 +484,12 @@ void DrawLine(int x1, int y1, int x2, int y2,int col)
 					x = x - 1;
 				py = py + 2 * (dx1 - dy1);
 			}
-			putpixel(x, y,col);
+			putpixel(x, y,col,c);
 		}
 	}
 }
 
-void DrawCircle(int xc, int yc, int r,int col)
+void DrawCircle(int xc, int yc, int r,int col,char c)
 {
 	int x = 0;
 	int y = r;
@@ -377,14 +500,14 @@ void DrawCircle(int xc, int yc, int r,int col)
 
 	while (y >= x)
 	{
-		putpixel(xc - x, yc - y,col);   //upper left left
-		putpixel(xc - y, yc - x,col);   //upper upper left
-		putpixel(xc + y, yc - x,col);   //upper upper right
-		putpixel(xc + x, yc - y,col);   //upper right right
-		putpixel(xc - x, yc + y,col);   //lower left left
-		putpixel(xc - y, yc + x,col);   //lower lower left
-		putpixel(xc + y, yc + x,col);   //lower lower right
-		putpixel(xc + x, yc + y,col);   //lower right right
+		putpixel(xc - x, yc - y,col,c);   //upper left left
+		putpixel(xc - y, yc - x,col,c);   //upper upper left
+		putpixel(xc + y, yc - x,col,c);   //upper upper right
+		putpixel(xc + x, yc - y,col,c);   //upper right right
+		putpixel(xc - x, yc + y,col,c);   //lower left left
+		putpixel(xc - y, yc + x,col,c);   //lower lower left
+		putpixel(xc + y, yc + x,col,c);   //lower lower right
+		putpixel(xc + x, yc + y,col,c);   //lower right right
 
 		if (p < 0)
 			p += 4 * x++ + 6;
@@ -400,14 +523,14 @@ void SWAP(int* x, int* y)
 	*y = t;
 };
 
-void drawline(int sx, int ex, int ny,int col)
+void drawline(int sx, int ex, int ny,int col,char c)
 {
 	int i;
 	for (i = sx; i <= ex; i++)
-		putpixel(i, ny,col);
+		putpixel(i, ny,col,c);
 };
 
-void FillTriangle(int x1, int y1, int x2, int y2, int x3, int y3,int col)
+void FillTriangle(int x1, int y1, int x2, int y2, int x3, int y3,int col,char c)
 {
 	int t1x, t2x, y, minx, maxx, t1xp, t2xp;
 	int changed1 = FALSE;
@@ -531,7 +654,7 @@ next2:
 			maxx = t1x;
 		if (maxx<t2x)
 			maxx = t2x;
-		drawline(minx, maxx, y,col);
+		drawline(minx, maxx, y,col,c);
 
 		if (!changed1)
 			t1x += signx1;
@@ -630,7 +753,7 @@ next4:
 			maxx = t1x;
 		if (maxx<t2x)
 			maxx = t2x;
-		drawline(minx, maxx, y,col);
+		drawline(minx, maxx, y,col,c);
 		if (!changed1)
 			t1x += signx1;
 		t1x += t1xp;
@@ -644,19 +767,36 @@ next4:
 
 }
 
-void DrawTriangle(Triangle t,int color)
+void DrawTriangle(Triangle t,int color,char c)
 {
-	DrawLine(t.vertex1.x,t.vertex1.y,t.vertex2.x,t.vertex2.y,color);
-	DrawLine(t.vertex2.x,t.vertex2.y,t.vertex3.x,t.vertex3.y,color);
-	DrawLine(t.vertex3.x,t.vertex3.y,t.vertex1.x,t.vertex1.y,color);
-
+	DrawLine(t.vertex1.x,t.vertex1.y,t.vertex2.x,t.vertex2.y,color,c);
+	DrawLine(t.vertex2.x,t.vertex2.y,t.vertex3.x,t.vertex3.y,color,c);
+	DrawLine(t.vertex3.x,t.vertex3.y,t.vertex1.x,t.vertex1.y,color,c);
 }
 
-void Filltriangle(Triangle t,int color)
+void Filltriangle(Triangle t,int color,char c)
 {
-	FillTriangle(t.vertex1.x,t.vertex1.y,t.vertex2.x,t.vertex2.y,t.vertex3.x,t.vertex3.y,color);
+	FillTriangle(t.vertex1.x,t.vertex1.y,t.vertex2.x,t.vertex2.y,t.vertex3.x,t.vertex3.y,color,c);
 }
 
+void Fillrect2(int ox,int oy,int width,int height,int color,char c)
+{
+	int i, j;
+	int x1,x2,y1,y2;
+	
+	x1=ox-(width/2);
+	x2=ox+(width/2);
+	y1=oy-(height/2);
+	y2=oy+(height/2);
+	
+	for(i=x1;i<=x2;i++)
+	{
+		for(j=y1;j<=y2;j++)
+		{
+				putpixel(i,j,color,c);
+		}
+	}
+}
 
 //for debug
 

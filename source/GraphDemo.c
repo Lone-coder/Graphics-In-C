@@ -1,4 +1,4 @@
-#include "graphplot.h"
+#include "Headers/graphplot.h"
 
 void main()
 {

@@ -1,5 +1,5 @@
-#ifndef VECTOR3D_H
-#define VECTOR3D_H
+#ifndef _VECTOR3D_H_
+#define _VECTOR3D_H_
 
 #include<math.h>
 
@@ -13,9 +13,10 @@ typedef struct VECTOR3D
 Vector3 NewVector3(FLOATPOINT x,FLOATPOINT y,FLOATPOINT z)
 {
 	Vector3 v;
-	v.x=x;
-	v.y=y;
-	v.z=z;
+	v.x = x;
+	v.y = y;
+	v.z = z;
+	v.w = 1;
 
 	return v;
 }
@@ -39,18 +40,18 @@ void Vector3Normalize(Vector3 *v)
 {
 	FLOATPOINT mag=Vector3Mag(*v);
 
-	v->x/=mag;
-	v->y/=mag;
-	v->z/=mag;
+	v->x /= mag;
+	v->y /= mag;
+	v->z /= mag;
 }
 
 Vector3 Vector3Add(Vector3 v1,Vector3 v2)
 {
 	Vector3 v;
 
-	v.x=v1.x+v2.x;
-	v.y=v1.y+v2.y;
-	v.z=v1.z+v2.z;
+	v.x = v1.x+v2.x;
+	v.y = v1.y+v2.y;
+	v.z = v1.z+v2.z;
 
 	return v;
 }
@@ -73,18 +74,18 @@ FLOATPOINT Vector3Dot(Vector3 v1,Vector3 v2)
 
 void Vector3Scale(Vector3 *v,FLOATPOINT scale)
 {
-	v->x*=scale;
-	v->y*=scale;
-	v->z*=scale;
+	v->x *= scale;
+	v->y *= scale;
+	v->z *= scale;
 }
 
 Vector3 Vector3ScalarMul(Vector3 v,FLOATPOINT scale)
 {
 	Vector3 scaled;
 	
-	scaled.x=v.x*scale;
-	scaled.y=v.y*scale;
-	scaled.z=v.z*scale;
+	scaled.x = v.x * scale;
+	scaled.y = v.y * scale;
+	scaled.z = v.z * scale;
 	
 	return scaled;
 }

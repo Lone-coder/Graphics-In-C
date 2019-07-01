@@ -4,11 +4,11 @@
 #include<math.h>
 #include "Vector3D.h"
 
-double xtheta,ytheta,ztheta;
+double xtheta = 0,ytheta = 0,ztheta = 0;
+double dx = 0,dy = 0,dz = 0;
 
 typedef struct TRIS
 {
-
 	Vector3 vertex1;
 	Vector3 vertex2;
 	Vector3 vertex3;
@@ -17,12 +17,12 @@ typedef struct TRIS
 
 typedef struct OBJECT
 {
-	Vector3 *vertices;
 	Triangle *triangles;
 	int nVertices;
 	int nTriangles;
 
 } Object;
+
 
 
 #endif

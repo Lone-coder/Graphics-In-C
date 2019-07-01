@@ -15,7 +15,6 @@ DWORD cNumRead, fdwMode, n;
 INPUT_RECORD irInBuf[128];
 int offsetx, offsety;
 
-
 char *ToString(int num);
 
 typedef struct PANEL
@@ -63,7 +62,7 @@ void DrawGUI()
 {
 	if(Buttons!=NULL)
 	{
-		
+		return;
 	}
 }
 

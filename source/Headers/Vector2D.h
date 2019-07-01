@@ -3,43 +3,61 @@
 
 #include<math.h>
 
+typedef float DATATYPE;
+
 typedef struct VECTOR2D
 {
-	float x,y;
+	DATATYPE x,y;
 
 } Vector2;
 
-void InitVector2(Vector2* v,float x,float y)
+Vector2 NewVector2(DATATYPE x,DATATYPE y)
 {
-	v->x=x;
-	v->x=y;
+	Vector2 v;
+	
+	v.x = x;
+	v.y = y;
+	
+	return v;
 }
 
-float Vector2Mag(Vector2 v)
+DATATYPE Vector2Mag(Vector2 v)
 {
 	return sqrt(v.x * v.x + v.y * v.y);
 }
 
-float Vector2SqrMag(Vector2 v)
+DATATYPE Vector2SqrMag(Vector2 v)
 {
 	return (v.x * v.x + v.y * v.y);
 }
 
-float Vector2Dot(Vector2 v1,Vector2 v2)
+DATATYPE Vector2Dot(Vector2 v1,Vector2 v2)
 {
 	return (v1.x * v2.x + v1.y * v2.y);
 }
 
 void Vector2Normalize(Vector2 *v)
 {
-	float mag=Vector2Mag(*v);
-	v->x/mag;
-	v->y/mag;
+	DATATYPE mag = Vector2Mag(*v);
+	
+	v->x /= mag;
+	v->y /= mag;
 }
 
-void Vector2DotScalar(Vector2 *v,float scalar)
+void Vector2DotScalar(Vector2 *v,DATATYPE scalar)
 {
-	v->x*=scalar;
-	v->y*=scalar;
+	v->x *= scalar;
+	v->y *= scalar;
 }
+
+Vector2 Vector2Subtract(Vector2 v1,Vector2 v2)
+{
+	Vector2 v;
+	
+	v.x = v1.x - v2.x;
+	v.y = v1.y - v2.y;
+	
+	return v;
+}
+
 #endif

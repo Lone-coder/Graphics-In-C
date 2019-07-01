@@ -108,7 +108,6 @@ void CreateConsole(const char *AppName,int width,int height,int fontW,int fontH)
     cfi.FontFamily = 0;
     cfi.FontWeight =0;
 
-
     SetConsoleTitleA(AppName);
     SetConsoleWindowInfo(wHnd,TRUE,&windowSize);
     SetCurrentConsoleFontEx(wHnd,TRUE,&cfi);
@@ -347,9 +346,9 @@ void Fillrect2(int ox,int oy,int width,int height,int color)
 	y1=oy-(height/2);
 	y2=oy+(height/2);
 	
-	for(i=x1;i<x2;i++)
+	for(i=x1;i<=x2;i++)
 	{
-		for(j=y1;j<y2;j++)
+		for(j=y1;j<=y2;j++)
 		{
 				PutPixel(i,j,color);
 		}
