@@ -1,21 +1,27 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<stdbool.h>
+#include<string.h>
 
-#include "Vector3D.h"
+#include<Vector3D.h>
+#include<Matrix3D.h>
+#include<Geometry.h>
+#include<3DG.h>
 
 #define MAX_RANGE 100
 #define MAX(X,Y)  X > Y ? X : Y
 #define MIN(X,Y)  X < Y ? X : Y
 
+#define FLOAT FLOATPOINT
+
 int i,j;
 
-const int width = 1280;
-const int height = 720;
+const int width = 640*3;
+const int height = 360*3;
 
 typedef struct PIXEL_UNIT
 {
-	char r,g,b;
+	FLOAT r,g,b;
 } Pixel,Color;
 
 typedef struct SPHERE
@@ -39,15 +45,28 @@ typedef struct RAY
 	Vector3 direction;
 } Ray;
 
+typedef struct CAMERA
+{
+	Vector3 position;
+	Vector3 lookAt;
+}Camera;
+
+typedef struct LIGHT
+{
+	Vector3 lightPosition;
+	FLOAT intensity;
+	Color lightColor;
+}Light;
+
 Pixel *imageData;
 
-Color Red = {255,0,0};
-Color White = {255,255,255};
-Color Green = {0,255,0};
-Color Blue = {0,0,255};
+Color Red = {1,0,0};
+Color White = {1,1,1};
+Color Green = {0,1,0};
+Color Blue = {0,0,1};
 Color Black = {0,0,0};
 
-Color NewColor(char r,char g,char b)
+Color NewColor(FLOAT r,FLOAT g,FLOAT b)
 {
 	Color color;
 
@@ -96,20 +115,41 @@ bool IntersectsWithSphere(Ray ray,Sphere sphere,FLOAT *t)
 }
 
 bool IntersectsWithPlane(Ray ray,Plane plane,FLOAT *t)
-{
-	Vector3 oa = Vector3Subtract(plane.position,ray.origin);
-	
+{	
 	FLOAT dn = Vector3Dot(ray.direction,plane.normal);
+	
+	if(dn==0)
+		return false;
+		
+	Vector3 oa = Vector3Subtract(plane.position,ray.origin);
 	
 	FLOAT x = Vector3Dot(oa,plane.normal)/dn;
 	
-	if(x>0 && x<50)
+	Vector3Scale(&ray.direction,x);
+				
+	Vector3 P = Vector3Add(ray.origin,ray.direction);
+	
+	if(Vector3SqrLength(P,plane.position) <= plane.size * plane.size)
+//	if(P.x >-plane.size/2 && P.x < plane.size/2 && P.z >-plane.size/2 && P.z < plane.size/2 && fabs(P.y - plane.position.y) < 0.000001)
 	{
 		*t = x;
 		return true;
 	}
 	else
 		return false;
+}
+
+Vector3 ReflectDir(Vector3 I,Vector3 N)
+{
+	FLOAT dotIN =  2* Vector3Dot(I,N);
+	Vector3Scale(&N,dotIN);
+	
+	return Vector3Subtract(I,N);
+}
+
+FLOAT Clamp(FLOAT min,FLOAT max,FLOAT value)
+{
+	return MAX(0,MIN(1,value));
 }
 
 void WriteToImageData(Pixel *imageData,int x,int y,Color color)
@@ -119,136 +159,251 @@ void WriteToImageData(Pixel *imageData,int x,int y,Color color)
 	imageData[x+y*width].b = color.b;
 }
 
-void CreatePPMImageFile(Pixel *imageData)
+char *ToString(int num)
 {
-	FILE *imageFile = fopen("image.ppm","wb");
+	int n = num;
+	int numdigits = 0;
+	char *number;
+
+	while (n != 0)
+	{
+		n = n / 10;
+		numdigits++;
+	}
+
+	number = (char*)malloc(sizeof(char)*numdigits);
+
+	itoa(num,number,10);
+
+	return number;
+}
+
+void CreatePPMImageFile(Pixel *imageData,int frameIndex)
+{
+	char imageFileName[10] = "image";
+	
+	strcat(imageFileName,ToString(frameIndex));
+	strcat(imageFileName,".ppm");
+	
+	FILE *imageFile = fopen(imageFileName,"wb");
 	fprintf(imageFile,"P6 %d %d 255 ",width,height);
 
-	int i,j;
+	int i;
 
-	for(j=0; j<height; j++)
+	for(i=0; i<height*width; i++)
 	{
-		for(i=0; i<width; i++)
-		{
-			fprintf(imageFile,"%c%c%c",(char)imageData[i+j*width].r,(char)imageData[i+j*width].g,(char)imageData[i+j*width].b);
-		}
+		fprintf(imageFile,"%c",(char) (255.0*imageData[i].r));
+		fprintf(imageFile,"%c",(char) (255.0*imageData[i].g));
+		fprintf(imageFile,"%c",(char) (255.0*imageData[i].b));
 	}
 
 	fclose(imageFile);
+}
+
+Mat4x4 CameraToWorld(Camera cam)
+{
+	Vector3 up = {0,1,0};
+	
+	Mat4x4 mat;
+	
+	Vector3 forwardVect = Vector3Subtract(cam.lookAt,cam.position);
+	Vector3Normalize(&forwardVect);
+	Vector3 rightVect = Vector3Cross(up,forwardVect);
+	Vector3Normalize(&rightVect);
+	Vector3 upVect = Vector3Cross(forwardVect,rightVect);
+	Vector3Normalize(&upVect);
+	
+	mat.mat[0][0] = rightVect.x;
+	mat.mat[0][1] =	upVect.x;
+	mat.mat[0][2] =	forwardVect.x;
+	mat.mat[0][3] = cam.position.x;
+	
+	mat.mat[1][0] = rightVect.y;
+	mat.mat[1][1] =	upVect.y;
+	mat.mat[1][2] =	forwardVect.y;
+	mat.mat[1][3] = cam.position.y;
+	
+	mat.mat[2][0] = rightVect.z;
+	mat.mat[2][1] =	upVect.z;
+	mat.mat[2][2] =	forwardVect.z;
+	mat.mat[2][3] = cam.position.z;
+	
+	mat.mat[3][0] = rightVect.w;
+	mat.mat[3][1] =	upVect.w;
+	mat.mat[3][2] =	forwardVect.w;
+	mat.mat[3][3] = cam.position.w;
+	
+	return mat;
+}
+
+Color CastRay(Ray ray,Sphere sphere,Plane plane,Light light,int depth)
+{
+	Color illumColor;
+	FLOAT t;
+	
+	if(depth>4)
+	{
+		illumColor = NewColor(0.2,0.92,0.98);
+		return illumColor;
+	}
+		
+	
+	if(IntersectsWithSphere(ray,sphere,&t))
+	{		
+		Ray reflected;
+		
+		Vector3Scale(&ray.direction,t);
+		
+		Vector3 P = Vector3Add(ray.origin,ray.direction);
+		
+		Vector3 N = Vector3Subtract(P,sphere.position);
+		Vector3Normalize(&N);
+		
+		Vector3Normalize(&ray.direction);
+		
+		reflected.origin = P;
+		reflected.direction = ReflectDir(ray.direction,N);
+		
+		Color reflectColor = CastRay(reflected,sphere,plane,light,depth+1);
+		
+		reflectColor.r*=0.9;
+		reflectColor.g*=0.9;
+		reflectColor.b*=0.9;
+		
+		Vector3 PL = Vector3Subtract(light.lightPosition,P);
+		Vector3Normalize(&PL);
+		
+		FLOAT ki = MAX(0,Vector3Dot(N,PL));
+						
+		illumColor.r = ((reflectColor.r+ki*light.lightColor.r*light.intensity*sphere.diffuseColor.r)/M_PI);
+		illumColor.g = ((reflectColor.g+ki*light.lightColor.g*light.intensity*sphere.diffuseColor.g)/M_PI);
+		illumColor.b = ((reflectColor.b+ki*light.lightColor.b*light.intensity*sphere.diffuseColor.b)/M_PI);
+	}
+	else if(IntersectsWithPlane(ray,plane,&t))
+	{
+		Ray reflected;
+		reflected.direction = ReflectDir(ray.direction,plane.normal);
+		Vector3Normalize(&reflected.direction);
+									
+		Vector3Scale(&ray.direction,t);
+		
+		Vector3 P = Vector3Add(ray.origin,ray.direction);
+		
+		reflected.origin = P;
+		
+		
+		Color reflectColor; //= CastRay(reflected,sphere,plane,light,2);
+		
+		reflectColor.r*=0;
+		reflectColor.g*=0;
+		reflectColor.b*=0;
+		
+		if(1)
+		{
+			bool xblack = false,zblack = false;
+			
+			Color c = plane.diffuseColor;
+			
+			if((P.x>-20 && P.x<-10) || (P.x>0 && P.x<10))
+			{
+				plane.diffuseColor = White; xblack=true;
+			}
+			if((P.z>-20 && P.z<-10) || (P.z>0 && P.z<10))
+			{
+				plane.diffuseColor = White; zblack=true;
+			}
+			if(xblack && zblack)
+			{
+				plane.diffuseColor = c;
+			}
+		
+			Vector3 PL = Vector3Subtract(light.lightPosition,P);
+			
+			Vector3Normalize(&PL);
+							
+			FLOAT ki = MAX(0,Vector3Dot(plane.normal,PL));
+			
+			illumColor.r = ((reflectColor.r+ki*light.lightColor.r*light.intensity*plane.diffuseColor.r)/M_PI);
+			illumColor.g = ((reflectColor.g+ki*light.lightColor.g*light.intensity*plane.diffuseColor.g)/M_PI);
+			illumColor.b = ((reflectColor.b+ki*light.lightColor.b*light.intensity*plane.diffuseColor.b)/M_PI);
+		}
+	}
+	else
+	{
+		illumColor = NewColor(0.2,0.92,0.98);
+	}
+	
+	return illumColor;
 }
 
 void main()
 {
 	imageData = (Pixel*)malloc(width*height*sizeof(Pixel));
 
-	Sphere sphere = NewSphere(10,NewVector3(0,0,50),Red);
+	Sphere sphere = NewSphere(5,NewVector3(0,0,0),Blue);
 	
 	Plane plane;
-	plane.position = NewVector3(0,-1,50);
+	plane.position = NewVector3(0,-5,0);
 	plane.normal = NewVector3(0,1,0);
-	plane.size = 30;
-	plane.diffuseColor = White;
+	plane.size = 40;
+	plane.diffuseColor = Green;
 
-	int FOV = M_PI/2;
-
-	Vector3 lightPosition = {30,50,0};
+	FLOAT FOV = M_PI/3;
 	
-	FLOAT lightIntensity = 1e6;
-	Color lightColor = White;
+	//Light
+	Light mainLight;
+	mainLight.lightPosition = NewVector3(0,6,0);
+	mainLight.lightColor = White;
+	mainLight.intensity = 2;
 	
-	Color AmbientColor = NewColor(sphere.diffuseColor.r*0.8,sphere.diffuseColor.g*0.8,sphere.diffuseColor.g*0.8);
+	//Camera
+	Camera cam;
+	cam.position = NewVector3(0,6,50);
+	cam.lookAt = NewVector3(0,0,0);
 	
+	Color ambientColor = NewColor(0.05,0.05,0.05);
 	
-	for(j=0; j<height; j++)
-	{
-		for(i=0; i<width; i++)
+	int frame=0;
+	
+	for(frame=0; frame<1; frame++)
+	{		
+		Mat4x4 camToWorld = CameraToWorld(cam);
+		
+		for(j=0; j<height; j++)
 		{
-
-			FLOAT x = (2*(i + 0.5)/width  - 1) * tan(FOV/2.0)*width/(FLOAT)height;
-			FLOAT y = -(2*(j + 0.5)/height - 1) * tan(FOV/2.0);
-			FLOAT z = 1;
-
-			FLOAT t = 0;
-			FLOAT distance;
-			
-			Ray ray;
-
-			ray.origin = NewVector3(x,y,0);
-
-			ray.direction = NewVector3(x,y,z);
-
-			Vector3Normalize(&ray.direction);
-			
-			if(IntersectsWithSphere(ray,sphere,&t))
+			for(i=0; i<width; i++)
 			{
-				distance = Vector3Length(sphere.position,lightPosition);
+				FLOAT x = (2.0*(i + 0.5)/width  - 1) * tan(FOV/2.0)*width/(FLOAT)height;
+				FLOAT y = -(2.0*(j + 0.5)/height - 1) * tan(FOV/2.0);
 				
-				Vector3Scale(&ray.direction,t);
-				
-				Vector3 p = Vector3Add(ray.origin,ray.direction);
-				
-				Vector3 normal = Vector3Subtract(p,sphere.position);
-				Vector3Normalize(&normal);
-				
-				Vector3 lP = Vector3Subtract(lightPosition,p);
-				Vector3Normalize(&lP);
-								
-				FLOAT ki = MAX(0,Vector3Dot(normal,lP));
-								
 				Color illumColor;
-								
-				illumColor.r = (char)((AmbientColor.r)+(ki*lightColor.r*lightIntensity*sphere.diffuseColor.r)/(distance*distance));
-				illumColor.g = (char)((AmbientColor.g)+(ki*lightColor.g*lightIntensity*sphere.diffuseColor.g)/(distance*distance));
-				illumColor.b = (char)((AmbientColor.b)+(ki*lightColor.b*lightIntensity*sphere.diffuseColor.b)/(distance*distance));
-
-				WriteToImageData(imageData,i,j,illumColor);
+				
+				Vector3 origin = NewVector3(0,0,0);
+				Vector3 cImagePlane = NewVector3(x,y,-1);
+				
+				Ray ray;
+				ray.origin = matmul(camToWorld,origin);
+				Vector3 wImagePLane = matmul(camToWorld,cImagePlane);			
+				ray.direction = Vector3Subtract(wImagePLane,ray.origin);			
+				Vector3Normalize(&ray.direction);
+				
+				illumColor = CastRay(ray,sphere,plane,mainLight,0);
+				
+				illumColor.r+=ambientColor.r;
+				illumColor.r+=ambientColor.g;
+				illumColor.r+=ambientColor.b;
+				
+				WriteToImageData(imageData,i,j,illumColor);	
 			}
-			else if(IntersectsWithPlane(ray,plane,&t))
-			{				
-				distance = Vector3Length(plane.position,lightPosition);
-				
-				Vector3Scale(&ray.direction,t);
-				
-				Vector3 p = Vector3Add(ray.origin,ray.direction);
-				
-				Ray shadowRay;
-				
-				shadowRay.origin = p;
-				shadowRay.direction = Vector3Subtract(p,lightPosition);
-				Vector3Normalize(&shadowRay.direction);
-				
-				if(IntersectsWithSphere(shadowRay,sphere,&t))
-				{
-					WriteToImageData(imageData,i,j,Black);
-				}
-				else
-				{
-					Vector3 lP = Vector3Subtract(lightPosition,p);
-				
-					Vector3Normalize(&lP);
-								
-					FLOAT ki = MAX(0,Vector3Dot(plane.normal,lP));
-								
-					Color illumColor;
-				
-					illumColor.r = (char)((AmbientColor.r)+(ki*lightColor.r*lightIntensity*plane.diffuseColor.r)/(distance*distance));
-					illumColor.g = (char)((AmbientColor.g)+(ki*lightColor.g*lightIntensity*plane.diffuseColor.g)/(distance*distance));
-					illumColor.b = (char)((AmbientColor.b)+(ki*lightColor.b*lightIntensity*plane.diffuseColor.b)/(distance*distance));
-				
-					WriteToImageData(imageData,i,j,illumColor);
-				}
-				
-			}
-			else
-			{
-				WriteToImageData(imageData,i,j,NewColor(160,220,255));
-			}
-				
-
 		}
+	
+	CreatePPMImageFile(imageData,frame);
+	printf("Frame : %d",frame);
+	
+	cam.position.x+=0.5;
+		
 	}
-
-	CreatePPMImageFile(imageData);
+	
 
 	free(imageData);
 }

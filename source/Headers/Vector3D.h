@@ -26,14 +26,19 @@ FLOATPOINT Vector3Mag(Vector3 v)
 	return sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 }
 
+FLOATPOINT Vector3SqrMag(Vector3 v)
+{
+	return (v.x*v.x + v.y*v.y + v.z*v.z);
+}
+
 FLOATPOINT Vector3Length(Vector3 v1,Vector3 v2)
 {
 	return sqrt(pow((v1.x-v2.x),2) + pow((v1.y-v2.y),2) + pow((v1.z-v2.z),2));
 }
 
-FLOATPOINT Vector3SqrMag(Vector3 v)
+FLOATPOINT Vector3SqrLength(Vector3 v1,Vector3 v2)
 {
-	return (v.x*v.x + v.y*v.y + v.z*v.z);
+	return (pow((v1.x-v2.x),2) + pow((v1.y-v2.y),2) + pow((v1.z-v2.z),2));
 }
 
 void Vector3Normalize(Vector3 *v)
@@ -49,9 +54,9 @@ Vector3 Vector3Add(Vector3 v1,Vector3 v2)
 {
 	Vector3 v;
 
-	v.x = v1.x+v2.x;
-	v.y = v1.y+v2.y;
-	v.z = v1.z+v2.z;
+	v.x = v1.x + v2.x;
+	v.y = v1.y + v2.y;
+	v.z = v1.z + v2.z;
 
 	return v;
 }
@@ -60,9 +65,9 @@ Vector3 Vector3Subtract(Vector3 v1,Vector3 v2)
 {
 	Vector3 v;
 
-	v.x=v1.x-v2.x;
-	v.y=v1.y-v2.y;
-	v.z=v1.z-v2.z;
+	v.x = v1.x - v2.x;
+	v.y = v1.y - v2.y;
+	v.z = v1.z - v2.z;
 
 	return v;
 }
@@ -79,13 +84,13 @@ void Vector3Scale(Vector3 *v,FLOATPOINT scale)
 	v->z *= scale;
 }
 
-Vector3 Vector3ScalarMul(Vector3 v,FLOATPOINT scale)
+Vector3 Vector3ScalarMul(Vector3 v,FLOATPOINT scalar)
 {
 	Vector3 scaled;
 	
-	scaled.x = v.x * scale;
-	scaled.y = v.y * scale;
-	scaled.z = v.z * scale;
+	scaled.x = v.x * scalar;
+	scaled.y = v.y * scalar;
+	scaled.z = v.z * scalar;
 	
 	return scaled;
 }
@@ -104,8 +109,7 @@ Vector3 Vector3Cross(Vector3 v1,Vector3 v2)
 //Debug
 void PrintVector3(Vector3 v,const char *label)
 {
-	printf("\n");
 	printf(label);
-	printf(" : ( %lf , %lf , %lf )\n",v.x,v.y,v.z);
+	printf("( %lf , %lf , %lf )\n",v.x,v.y,v.z);
 }
 #endif

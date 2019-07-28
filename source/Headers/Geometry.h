@@ -18,9 +18,10 @@ typedef struct TRIS
 typedef struct OBJECT
 {
 	Triangle *triangles;
+	Vector3 *normals;
+	Vector3 position;
 	int nVertices;
 	int nTriangles;
-
 } Object;
 
 
