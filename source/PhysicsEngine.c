@@ -1,5 +1,5 @@
 #include "Headers\ConsoleGUI.h"
-#include "Vector2D.h"
+#include "Headers\Vector2D.h"
 
 typedef struct BALL
 {
@@ -43,7 +43,6 @@ DrawBall()
 	{
 		for(i=0; i<nball; i++)
 		{
-			
 			
 			if(i%4)
 			DrawRect(balls[i].position.x, balls[i].position.y,balls[i].radius, balls[i].radius,balls[i].color);	

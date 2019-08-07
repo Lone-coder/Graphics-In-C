@@ -3,7 +3,7 @@
 
 #include<math.h>
 
-typedef float DATATYPE;
+typedef double DATATYPE;
 
 typedef struct VECTOR2D
 {
@@ -44,7 +44,7 @@ void Vector2Normalize(Vector2 *v)
 	v->y /= mag;
 }
 
-void Vector2DotScalar(Vector2 *v,DATATYPE scalar)
+void Vector2Scale(Vector2 *v,DATATYPE scalar)
 {
 	v->x *= scalar;
 	v->y *= scalar;
