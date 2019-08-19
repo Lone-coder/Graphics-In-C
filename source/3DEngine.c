@@ -16,7 +16,6 @@ char *ViewModeString[4]=
 	"INFRARED"
 };
 
-//x-axis
 Vector3 axisCoordinates[6] = { {5,0,0},{-5,0,0},{0,5,0},{0,-5,0},{0,0,5},{0,0,-5} };
 
 void DrawAxis(double xtheta,double ytheta,double ztheta)
@@ -60,21 +59,21 @@ Object GenerateMesh(int width,int height)
 	mesh.triangles = (Triangle*)malloc(sizeof(Triangle)*mesh.nTriangles);
 	
 	int i,j;
-	float x,z;
+	float x,y,z;
 	int vertexIndex = 0;
 	
-	x =- 1.0;
+	x = -1.0;
 	
 	for(i = 0; i < height+1; i++)
 	{
-		z =- 1.0;
+		z = -1.0;
 		
 		for(j = 0; j < width+1; j++)
 		{
 			
 			vertices[vertexIndex].x = x;
-			vertices[vertexIndex].y = z;
-			vertices[vertexIndex].z = sin(x + z);
+			vertices[vertexIndex].y = sin(z) + sin(x);
+			vertices[vertexIndex].z = z;
 			vertices[vertexIndex].w = 1;
 			
 			vertexIndex++;
@@ -141,6 +140,7 @@ Object GenerateMesh(int width,int height)
 
 void main(int argc,char *argv[])
 {
+	double dt = 0.05,t1,t2;
 	viewmode = solid;
 
 	char fileName[25];
@@ -154,62 +154,47 @@ void main(int argc,char *argv[])
 	strcat(path,fileName);
 
 	Object cube = LoadOBJFile(path);
-//	Object cube = GenerateMesh(10,10);	
+	//Object cube = GenerateMesh(30,30);	
 
 	CreateConsole("3DEngine",400,300,2,2);
-	SetBgColor(DARK_GREY);
+	SetBgColor(BLACK);
 
 	int i = 0;
 
 	Triangle trisRotated[cube.nTriangles];
 	Triangle trisTranslated[cube.nTriangles];
 	Triangle trisProj[cube.nTriangles];
+	
+	Camera cam;
+	cam.position = NewVector3(0,0,-10);
+	cam.lookAt = NewVector3(0,0,0);
 
-	scale = 40;
+	scale = 2;
 
-	Vector3 lightPosition = {0,0,0};
+	Vector3 lightPosition = {0,0,5};
 
 	OnUpdate()
 	{
-		DrawAxis(xtheta,ytheta,ztheta);
+		t1 = GetTime(); 
 		//control rotation
-		if(GetAsyncKeyState(VK_INSERT))
-			xtheta++;
+		if(GetAsyncKeyState(VK_UP))
+			xtheta += 1.0 * dt;
 
-		if(GetAsyncKeyState(VK_DELETE))
-			xtheta--;
+		if(GetAsyncKeyState(VK_DOWN))
+			xtheta -= 1.0 * dt;
 
-		if(GetAsyncKeyState(VK_HOME))
-			ytheta++;
+		if(GetAsyncKeyState(VK_LEFT))
+			ytheta += 1.0 * dt;
 
-		if(GetAsyncKeyState(VK_END))
-			ytheta--;
-		
-		//control light position
-		if(GetAsyncKeyState(VK_F1))
-			lightPosition.x++;
-		
-		if(GetAsyncKeyState(VK_F2))
-			lightPosition.x--;
-			
-		if(GetAsyncKeyState(VK_F3))
-			lightPosition.y++;
-		
-		if(GetAsyncKeyState(VK_F4))
-			lightPosition.y--;
-			
-		if(GetAsyncKeyState(VK_F5))
-			lightPosition.z++;
-		
-		if(GetAsyncKeyState(VK_F6))
-			lightPosition.z--;
+		if(GetAsyncKeyState(VK_RIGHT))
+			ytheta -= 1.0 * dt;
 		
 		//control scaling of the model
 		if(GetAsyncKeyState(VK_ADD))
-			scale+=5;
+			scale += 1.0;
 
 		if(GetAsyncKeyState(VK_SUBTRACT))
-			scale-=5;
+			scale -= 1.0;
 
 		//control viewmode
 		if(GetAsyncKeyState(VK_TAB))
@@ -255,10 +240,16 @@ void main(int argc,char *argv[])
 			trisRotated[i].vertex2 = UpdateRotationY(trisRotated[i].vertex2,ytheta);
 			trisRotated[i].vertex3 = UpdateRotationY(trisRotated[i].vertex3,ytheta);
 
-			trisTranslated[i].vertex1 = TranslateObject(trisRotated[i].vertex1,dx,dy,dz);
-			trisTranslated[i].vertex2 = TranslateObject(trisRotated[i].vertex2,dx,dy,dz);
-			trisTranslated[i].vertex3 = TranslateObject(trisRotated[i].vertex3,dx,dy,dz);
-
+			trisTranslated[i].vertex1 = Translate(trisRotated[i].vertex1,dx,dy,dz);
+			trisTranslated[i].vertex2 = Translate(trisRotated[i].vertex2,dx,dy,dz);
+			trisTranslated[i].vertex3 = Translate(trisRotated[i].vertex3,dx,dy,dz);
+				
+			Mat4x4 m = CameraToWorld(cam);
+			
+			trisTranslated[i].vertex1 = matmul(m,trisTranslated[i].vertex1);
+			trisTranslated[i].vertex2 = matmul(m,trisTranslated[i].vertex2);
+			trisTranslated[i].vertex3 = matmul(m,trisTranslated[i].vertex3);
+				
 			trisProj[i].vertex1 = ProjectPoint(trisTranslated[i].vertex1);
 			trisProj[i].vertex2 = ProjectPoint(trisTranslated[i].vertex2);
 			trisProj[i].vertex3 = ProjectPoint(trisTranslated[i].vertex3);
@@ -268,21 +259,25 @@ void main(int argc,char *argv[])
 		//rearranging triangles according to the distance of midpoint
 		int n = 0,m = 0;
 
-//		for(n = 0; n < cube.nTriangles; n++)
-//		{
-//			for(m = n+1; m < cube.nTriangles; m++)
-//			{
-//				Vector3 midVert1 = Vector3ScalarMul(Vector3Add(Vector3Add(trisProj[n].vertex1,trisProj[n].vertex2),trisProj[n].vertex3),0.33);
-//				Vector3 midVert2 = Vector3ScalarMul(Vector3Add(Vector3Add(trisProj[m].vertex1,trisProj[m].vertex2),trisProj[m].vertex3),0.33);
-//
-//				if(midVert1.z > midVert2.z)
-//				{
-//					Triangle temp = trisProj[n];
-//					trisProj[n] = trisProj[m];
-//					trisProj[m] = temp;
-//				}
-//			}
-//		}
+		for(n = 0; n < cube.nTriangles; n++)
+		{
+			for(m = n+1; m < cube.nTriangles; m++)
+			{
+				Vector3 midVert1 = Vector3ScalarMul(Vector3Add(Vector3Add(trisRotated[n].vertex1,trisRotated[n].vertex2),trisRotated[n].vertex3),0.33);
+				Vector3 midVert2 = Vector3ScalarMul(Vector3Add(Vector3Add(trisRotated[m].vertex1,trisRotated[m].vertex2),trisRotated[m].vertex3),0.33);
+
+				if(midVert1.z > midVert2.z)
+				{
+					Triangle temp1 = trisProj[n];
+					trisProj[n] = trisProj[m];
+					trisProj[m] = temp1;
+					
+					Triangle temp2 = trisRotated[n];
+					trisRotated[n] = trisRotated[m];
+					trisRotated[m] = temp2;
+				}
+			}
+		}
 
 		//rendering
 		int objColor = RandomColor();
@@ -292,12 +287,12 @@ void main(int argc,char *argv[])
 		{
 			if(viewmode == solid)
 			{	
-				Filltriangle(trisProj[i],GREY,defaultChar);
+				Filltriangle(trisProj[i],WHITE,defaultChar);
 				DrawTriangle(trisProj[i],BLACK,defaultChar);
 			}
 			else if(viewmode == wireFrame)
 			{				
-				DrawTriangle(trisProj[i],GREEN,defaultChar);
+				DrawTriangle(trisProj[i],WHITE,defaultChar);
 			}
 			else if(viewmode == shaded)
 			{				
@@ -313,14 +308,26 @@ void main(int argc,char *argv[])
 				
 				Vector3Normalize(&PL);
 
-				FLOATPOINT cosTheta = MAX(0,Vector3Dot(normal,PL));
+				FLOATPOINT cosTheta = MAX(0.0,Vector3Dot(normal,PL));
 				
-				if(cosTheta >-1)
-					Filltriangle(trisProj[i],DARK_GREY,defaultChar);
-				if(cosTheta >0.4)
-					Filltriangle(trisProj[i],GREY,defaultChar);
-				if(cosTheta > 0.9)
-					Filltriangle(trisProj[i],WHITE,defaultChar);
+				if(cosTheta >= 0.0f)
+					Filltriangle(trisProj[i],DARK_GREY,176);
+				if(cosTheta >= 0.2f)
+					Filltriangle(trisProj[i],DARK_GREY,178);
+				if(cosTheta >= 0.3f)
+					Filltriangle(trisProj[i],DARK_GREY,219);
+				if(cosTheta >= 0.4f)
+					Filltriangle(trisProj[i],GREY,176);
+				if(cosTheta >=0.5f)
+					Filltriangle(trisProj[i],GREY,178);
+				if(cosTheta >= 0.6f)
+					Filltriangle(trisProj[i],GREY,219);
+				if(cosTheta >= 0.7f)
+					Filltriangle(trisProj[i],WHITE,176);
+				if(cosTheta >= 0.8f)
+					Filltriangle(trisProj[i],WHITE,178);
+				if(cosTheta >= 0.9f)
+					Filltriangle(trisProj[i],WHITE,219);
 			}
 			else
 			{
@@ -331,33 +338,38 @@ void main(int argc,char *argv[])
 
 				Vector3Normalize(&normal);
 
-				Vector3 PL = Vector3Subtract(lightPosition,trisRotated[i].vertex1);
+				Vector3 PL = Vector3Subtract(lightPosition,trisRotated[0].vertex1);
 				
 				Vector3Normalize(&PL);
 
 				FLOATPOINT cosTheta = MAX(0,Vector3Dot(normal,PL));
 				
-				if(cosTheta >-1)
+				if(cosTheta >= 0)
 					Filltriangle(trisProj[i],DARK_BLUE,defaultChar);
-				if(cosTheta >0.2)
+				if(cosTheta >= 0.2)
 					Filltriangle(trisProj[i],BLUE,defaultChar);
-				if(cosTheta >0.3)
+				if(cosTheta >= 0.3)
 					Filltriangle(trisProj[i],CYAN,defaultChar);
-				if(cosTheta >0.4)
+				if(cosTheta >= 0.4)
 					Filltriangle(trisProj[i],DARK_GREEN,defaultChar);
-				if(cosTheta >0.5)
+				if(cosTheta >=0.5)
 					Filltriangle(trisProj[i],GREEN,defaultChar);
-				if(cosTheta >0.6)
+				if(cosTheta >= 0.6)
 					Filltriangle(trisProj[i],YELLOW,defaultChar);
-				if(cosTheta >0.7)
+				if(cosTheta >= 0.7)
 					Filltriangle(trisProj[i],DARK_RED,defaultChar);
-				if(cosTheta >0.8)
+				if(cosTheta >= 0.8)
 					Filltriangle(trisProj[i],MAGENTA,defaultChar);
-				if(cosTheta >0.9)
+				if(cosTheta >= 0.9)
 					Filltriangle(trisProj[i],WHITE,defaultChar);	
 			}
 		}
-		DrawFrame(FALSE);
+		
+		DrawAxis(xtheta,ytheta,ztheta);
+		DrawFrame(true);
+		
+		t2 = GetTime();
+		dt = t2 - t1;
 	}
 
 }

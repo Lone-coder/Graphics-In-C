@@ -1,6 +1,53 @@
 #ifndef PutPixel_H
 #define PutPixel_H
 
+void PutCharacter(char,int,int,int);
+
+int stringsize(const char *s)
+{
+	int n = 0;
+
+	while (*(s + n) != 0)
+		n++;
+
+	return n;
+}
+
+void PrintString(const char *s, int x, int y, int color)
+{
+	int i = 0;
+	int space = 0;
+	int tsize = ( stringsize(s) * 5 + stringsize(s)-1 );
+	int p = (tsize / 2);
+	x = x - p + 2;
+
+	while (*(s + i) != 0)
+	{
+		PutCharacter(*(s + i), x + space, y, color);
+		space += 7;
+		i++;
+	}
+}
+
+char *ToString(int numToConvert)
+{
+	int n = numToConvert;
+	int numdigits = 0;
+	char *numberInChar;
+
+	while (n != 0)
+	{
+		n = n / 10;
+		numdigits++;
+	}
+
+	numberInChar = (char*)malloc(sizeof(char)*numdigits);
+
+	itoa(numToConvert,numberInChar,10);
+
+	return numberInChar;
+}
+
 void PutCharacter(char c,int x,int y,int textcolor)
 {
 	//textcolor=randcolor();

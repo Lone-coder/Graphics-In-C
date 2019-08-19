@@ -1,4 +1,4 @@
-#include "2DGC.h"
+#include "Headers/2DGC.h"
 
 void main()
 {
@@ -6,8 +6,8 @@ void main()
 	
 	OnUpdate()
 	{
-		SetBGcolor(randcolor());
-		DrawFrame(TRUE);
+		SetBgColor(RandomColor());
+		DrawFrame(true);
 		sleep(1);
 	}
 }

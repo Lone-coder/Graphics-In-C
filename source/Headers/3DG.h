@@ -5,9 +5,9 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#include<Vector3D.h>
-#include<Matrix3D.h>
-#include<Geometry.h>
+#include "Vector3D.h"
+#include "Matrix3D.h"
+#include "Geometry.h"
 
 Vector3 UpdateRotationZ(Vector3 toRotate,double ang)
 {
@@ -140,8 +140,6 @@ Object LoadOBJFile(const char *fileName)
 				fscanf(objFile,"%lf",&vertices[object.nVertices-1].z);
 				
 				vertices[object.nVertices-1].w = 1;
-				
-				//PrintVector3(vertices[object.nVertices-1],"v:");
 			}			
 			else if(c1=='n')
 			{
@@ -157,8 +155,6 @@ Object LoadOBJFile(const char *fileName)
 				fscanf(objFile,"%lf",&normals[numNormals-1].z);
 				
 				normals[numNormals-1].w = 1;
-				
-				//PrintVector3(normals[numNormals-1],"vn:");
 			}
 		}
 		
@@ -183,13 +179,6 @@ Object LoadOBJFile(const char *fileName)
 				}
 	
 				fscanf(objFile,"%d%c%c%d%d%c%c%d%d%c%c%d",&x,&trash,&trash,&nx,&y,&trash,&trash,&ny,&z,&trash,&trash,&nz);
-//				printf("f:");
-//				printf("%d ",x);
-//				printf("%d ",nx);
-//				printf("%d ",y);
-//				printf("%d ",ny);
-//				printf("%d ",z);
-//				printf("%d\n",nz);
 	
 				object.triangles[object.nTriangles-1].vertex1 = vertices[x-1];
 				object.triangles[object.nTriangles-1].vertex2 = vertices[y-1];

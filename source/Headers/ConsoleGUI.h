@@ -108,53 +108,8 @@ void MakeLoadingBar(LoadingBar *Lb)
 	Lb->endvalue = x2 - 2;
 
 	DrawRect(Lb->ox, Lb->oy, Lb->width, Lb->height, Lb->bordercolor);
-	Fillrect(x1 + 2, y1 + 2, Lb->loadvalue, y2 - 2, Lb->fillcolor);
+	FillRectArea(x1 + 2, y1 + 2, Lb->loadvalue, y2 - 2, Lb->fillcolor,defaultChar);
 
-}
-
-void PrintString(const char *s, int x, int y, int color)
-{
-	int i = 0;
-	int space = 0;
-	int tsize = ( stringsize(s) * 5  + stringsize(s)-1 );
-	int p = (tsize / 2);
-	x = x - p + 2;
-
-	while (*(s + i) != 0)
-	{
-		PutCharacter(*(s + i), x + space, y, color);
-		space += CHAR_SPACE;
-		i++;
-	}
-}
-
-int stringsize(const char *s)
-{
-	int n = 0;
-
-	while (*(s + n) != 0)
-		n++;
-
-	return n;
-}
-
-char *ToString(int num)
-{
-	int n = num;
-	int numdigits = 0;
-	char *number;
-
-	while (n != 0)
-	{
-		n = n / 10;
-		numdigits++;
-	}
-
-	number = (char*)malloc(sizeof(char)*numdigits);
-
-	itoa(num,number,10);
-
-	return number;
 }
 
 //---------------Input handling--------------------//
